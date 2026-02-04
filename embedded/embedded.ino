@@ -2,6 +2,7 @@
 
 // User-defined libraries
 #include "State_Machine.h"
+#include "Bluetooth_Handler.h"
 
 // PROGRAM SETTINGS
 #define CONSOLE_LOGGING true
@@ -21,6 +22,7 @@ void PrintStatus() {
 void setup() {
   currentState = CONNECT;
 
+  InitBluetooth();
   Monitor.begin();
   delay(1000);
   Monitor.println("Ballzooka powered on.");
