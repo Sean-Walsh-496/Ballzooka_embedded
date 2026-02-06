@@ -18,7 +18,10 @@ extern const char* stateNames[NUM_STATES];
 
 
 // FUNCTIONS ===================================================================
+State EnterConnect();
 State HandleConnect();
+
+State EnterIdleSafe();
 State HandleIdleSafe();
 
 

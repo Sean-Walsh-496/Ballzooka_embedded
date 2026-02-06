@@ -20,17 +20,18 @@ void PrintStatus() {
 
 
 void setup() {
-  currentState = CONNECT;
+  currentState = EnterConnect();
 
-  InitBluetooth();
+  // InitBluetooth();
   Monitor.begin();
   delay(1000);
   Monitor.println("Ballzooka powered on.");
+
 }
 
 void loop() {
-  // check for failures
 
+  // state machine behavior
   switch(currentState) {
     case CONNECT:
       currentState = HandleConnect();
@@ -44,6 +45,5 @@ void loop() {
   if (CONSOLE_LOGGING) {
     PrintStatus();
   }
-
 
 }
