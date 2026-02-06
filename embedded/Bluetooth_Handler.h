@@ -3,8 +3,8 @@
 
 #include <ArduinoBLE.h>
 
-extern const BLEService heartBeatService;
-extern const BLEByteCharacteristic stateCharacteristic;
+extern BLEService heartBeatService;
+extern BLEByteCharacteristic stateCharacteristic;
 
 // FUNCTIONS ===================================================================
 bool InitBluetooth();

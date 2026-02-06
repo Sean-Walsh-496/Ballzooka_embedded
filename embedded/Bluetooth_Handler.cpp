@@ -4,16 +4,28 @@
 #define SERVICE_UUID "ba10f731-f94d-45f8-8ccd-89e393b418f4"
 #define TEST_CHARACTERISTIC_UUID "ba10f732-f94d-45f8-8ccd-89e393b418f4"
 
-const BLEService heartBeatService(SERVICE_UUID);
-const BLEByteCharacteristic stateCharacteristic(TEST_CHARACTERISTIC_UUID, BLERead | BLEWrite);
+BLEService heartBeatService(SERVICE_UUID);
+BLEByteCharacteristic stateCharacteristic(TEST_CHARACTERISTIC_UUID, BLERead | BLEWrite);
 
 
 // FUNCTION DEFINITIONS ========================================================
 bool InitBluetooth() {
   if (BLE.begin()) {
     Monitor.println("Successfully initialized Bluetooth service!");
+
+    // Name that appears when in "discovery" mode
     BLE.setLocalName("Ballzooka");
+
+    // advertises the service
     BLE.setAdvertisedService(heartBeatService);
+    
+    heartBeatService.addCharacteristic(stateCharacteristic);
+
+    BLE.addService(heartBeatService);
+
+    stateCharacteristic.writeValue(10);
+
+    // Put device in "discovery" mode for tablet to make connection
     BLE.advertise();
     return true;
   }

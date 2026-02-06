@@ -18,6 +18,11 @@ Ballzooka relies on the Bluetooth Low Energy (BLE) protocol to support
 communication between the Android tablet and the cannon. BLE uses a 
 *peripheral / central-device architecture*. The peripheral is the more resource 
 constrained device, in this case the Arduino inside the Ballzooka, while the 
-Android tablet acts as our central device.
+Android tablet acts as our central device. This is similar to a client-server
+architecture, where the peripheral acts as a server.
 
 The Arduino's BLE capabilities are implemented in __Bluetooth_Handler.cpp__.
+
+The peripheral device can advertise several *services*, which act as logical 
+groupings of individual pieces of data. These pieces of data, which may be read
+or written by the central device, are called *characteristics*.
