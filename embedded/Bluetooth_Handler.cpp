@@ -14,6 +14,7 @@ bool InitBluetooth() {
     Monitor.println("Successfully initialized Bluetooth service!");
     BLE.setLocalName("Ballzooka");
     BLE.setAdvertisedService(heartBeatService);
+    BLE.advertise();
     return true;
   }
   Monitor.println("Error initializing Bluetooth service!");

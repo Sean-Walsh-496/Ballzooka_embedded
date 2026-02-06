@@ -5,7 +5,7 @@
 #include "Bluetooth_Handler.h"
 
 // PROGRAM SETTINGS
-#define CONSOLE_LOGGING true
+#define CONSOLE_LOGGING false
 
 
 // GLOBALS =====================================================================

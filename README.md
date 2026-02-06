@@ -10,3 +10,14 @@ and upload it to an Arduino device. The software is targetting the Arduino UNO
 Q.
 
 
+
+## Implementation Details
+
+### Bluetooth
+Ballzooka relies on the Bluetooth Low Energy (BLE) protocol to support 
+communication between the Android tablet and the cannon. BLE uses a 
+*peripheral / central-device architecture*. The peripheral is the more resource 
+constrained device, in this case the Arduino inside the Ballzooka, while the 
+Android tablet acts as our central device.
+
+The Arduino's BLE capabilities are implemented in __Bluetooth_Handler.cpp__.
