@@ -1,8 +1,10 @@
 #include <Arduino_RouterBridge.h> // Micro-controller cannot access USB-C serial
 
 // User-defined libraries
-#include "State_Machine.h"
 #include "Bluetooth_Handler.h"
+#include "Sensors.h"
+#include "State_Machine.h"
+
 
 // PROGRAM SETTINGS
 #define CONSOLE_LOGGING false
@@ -20,9 +22,14 @@ void PrintStatus() {
 
 
 void setup() {
+  // set state machine to default
   currentState = EnterConnect();
 
+  // Init additional functionality
   // InitBluetooth();
+  InitGY521();
+
+
   Monitor.begin();
   delay(1000);
   Monitor.println("Ballzooka powered on.");
@@ -31,19 +38,30 @@ void setup() {
 
 void loop() {
 
-  // state machine behavior
-  switch(currentState) {
-    case CONNECT:
-      currentState = HandleConnect();
-      break;
-    case IDLE_SAFE:
-      currentState = HandleIdleSafe();
-      break;
-  }
+  GY521Data inData = getGY521Data();
+  GY521Orientation orient = getGY521Orientation(inData);
 
-  // log and change LED
-  if (CONSOLE_LOGGING) {
-    PrintStatus();
-  }
+  Monitor.println("New Reading");
+  Monitor.println(orient.pitch);
+  Monitor.println(orient.roll);
+  Monitor.println(orient.yaw);
+  delay(1000);
+
+
+
+  // // state machine behavior
+  // switch(currentState) {
+  //   case CONNECT:
+  //     currentState = HandleConnect();
+  //     break;
+  //   case IDLE_SAFE:
+  //     currentState = HandleIdleSafe();
+  //     break;
+  // }
+
+  // // log and change LED
+  // if (CONSOLE_LOGGING) {
+  //   PrintStatus();
+  // }
 
 }
