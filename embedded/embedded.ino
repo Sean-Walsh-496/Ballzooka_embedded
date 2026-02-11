@@ -1,4 +1,5 @@
 #include <Arduino_RouterBridge.h> // Micro-controller cannot access USB-C serial
+#include <Wire.h>
 
 // User-defined libraries
 #include "Bluetooth_Handler.h"
@@ -27,7 +28,9 @@ void setup() {
 
   // Init additional functionality
   // InitBluetooth();
-  InitGY521();
+  Wire.begin(); // begin I2c communication
+  // InitGY521();
+  InitSonar();
 
 
   Monitor.begin();
@@ -38,14 +41,21 @@ void setup() {
 
 void loop() {
 
-  GY521Data inData = getGY521Data();
-  GY521Orientation orient = getGY521Orientation(inData);
 
-  Monitor.println("New Reading");
-  Monitor.println(orient.pitch);
-  Monitor.println(orient.roll);
-  Monitor.println(orient.yaw);
+
+  Monitor.println("Getting sonar data");
+  int data = GetSonarData();
+  Monitor.println(data);
   delay(1000);
+
+  // GY521Data inData = GetGY521Data();
+  // GY521Orientation orient = GetGY521Orientation(inData);
+
+  // Monitor.println("New Reading");
+  // Monitor.println(orient.pitch);
+  // Monitor.println(orient.roll);
+  // Monitor.println(orient.yaw);
+  // delay(1000);
 
 
 

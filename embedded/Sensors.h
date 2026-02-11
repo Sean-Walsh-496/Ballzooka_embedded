@@ -21,10 +21,15 @@ struct GY521Orientation {
   double yaw;
 };
 
+
+
 void InitGY521();
-GY521Data getGY521Data();
-GY521Orientation getGY521Orientation(const GY521Data& data);
+GY521Data GetGY521Data();
+GY521Orientation GetGY521Orientation(const GY521Data& data);
 
 
+
+void InitSonar();
+int GetSonarData();
 
 #endif
