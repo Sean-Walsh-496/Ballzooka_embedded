@@ -26,3 +26,29 @@ The Arduino's BLE capabilities are implemented in __Bluetooth_Handler.cpp__.
 The peripheral device can advertise several *services*, which act as logical 
 groupings of individual pieces of data. These pieces of data, which may be read
 or written by the central device, are called *characteristics*.
+
+
+
+
+
+### Sensors
+Multiple sensors can be found on the Ballzooka, the majority of which are I2C 
+devices driven on a common serial bus. These connected directly to the builtin
+SCL and SDA GPIO pins are the Arduino.
+
+#### Sonar
+The sonar sensor is a I2CXL-MaxSonar-EZ. It's using the devices default I2C 
+address of 0x70. This is in the 7-bit format, and Arduino's Wire library 
+automatically handles appending a read or write bit the address during 
+communication.
+
+Reading the sensor involves two steps. First the Arduino issue a READ command to 
+the device by writing 81 to the sonar. We wait about 100ms (although the 
+datasheet indicates that this could be considerably reduced, this is just a test
+value) and then read two bytes from the device. These two bytes are appended
+into a single integer which represents the read distance in CM.
+
+
+
+#### Magnetometer
+

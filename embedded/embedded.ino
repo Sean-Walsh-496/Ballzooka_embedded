@@ -10,6 +10,9 @@
 // PROGRAM SETTINGS
 #define CONSOLE_LOGGING false
 
+#define PULSE_PIN D7
+#define HI_PIN D8
+
 
 // GLOBALS =====================================================================
 State currentState;
@@ -30,12 +33,19 @@ void setup() {
   // InitBluetooth();
   Wire.begin(); // begin I2c communication
   // InitGY521();
-  InitSonar();
+  // InitSonar();
 
 
   Monitor.begin();
   delay(1000);
   Monitor.println("Ballzooka powered on.");
+
+
+  pinMode(PULSE_PIN, OUTPUT);
+  pinMode(HI_PIN, OUTPUT);
+
+  digitalWrite(PULSE_PIN, LOW);
+  digitalWrite(HI_PIN, HIGH);
 
 }
 
@@ -43,21 +53,14 @@ void loop() {
 
 
 
-  Monitor.println("Getting sonar data");
-  int data = GetSonarData();
-  Monitor.println(data);
-  delay(1000);
+  digitalWrite(PULSE_PIN, LOW);
+  delay(10);
+  digitalWrite(PULSE_PIN, HIGH);
+  delay(10);
 
-  // GY521Data inData = GetGY521Data();
-  // GY521Orientation orient = GetGY521Orientation(inData);
 
-  // Monitor.println("New Reading");
-  // Monitor.println(orient.pitch);
-  // Monitor.println(orient.roll);
-  // Monitor.println(orient.yaw);
+  // GetMagnetometerData();
   // delay(1000);
-
-
 
   // // state machine behavior
   // switch(currentState) {

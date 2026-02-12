@@ -6,6 +6,8 @@
 // GY-521 code
 #define GY521Address 0x68
 #define SonarAddress 0x70
+#define LSM303AGR_ACC_ADDRESS 0x19 // 0011001X
+#define LSM303AGR_MAG_ADDRESS 0x1E //0011110b
 
 struct {
   int scl;
@@ -65,4 +67,37 @@ int GetSonarData() {
 
   return Wire.read()<<8|Wire.read(); // read high and low byte and append them
 
+}
+
+void InitMagnetometer() {
+  Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
+  // Wire.write()
+}
+
+
+LSM303AGRData GetMagnetometerData() {
+  LSM303AGRData ret;
+
+  const int ADDRESSES[] = {0x69, 0x68, 0x6B, 0x6A, 0x6D, 0x6C};
+  for (int i = 0; i < 6; i+=2) { // TODO: make this suck less
+    int test;
+    Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
+    Wire.write(ADDRESSES[i]);
+    Wire.endTransmission(false);
+    Wire.requestFrom(LSM303AGR_MAG_ADDRESS, 1, true);
+
+    test = Wire.read();
+    test<<8;
+
+    Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
+    Wire.write(ADDRESSES[i + 1]);
+    Wire.endTransmission(false);
+    Wire.requestFrom(LSM303AGR_MAG_ADDRESS, 1, true);
+
+    test |= Wire.read();
+
+    Monitor.println(test);
+  }
+
+  return ret;
 }

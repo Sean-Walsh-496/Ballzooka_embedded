@@ -22,14 +22,23 @@ struct GY521Orientation {
 };
 
 
+struct LSM303AGRData {
+  int MagX;
+  int MagY;
+  int MagZ;
+};
+
+
 
 void InitGY521();
 GY521Data GetGY521Data();
 GY521Orientation GetGY521Orientation(const GY521Data& data);
 
 
-
 void InitSonar();
 int GetSonarData();
+
+void InitMagnetometer();
+LSM303AGRData GetMagnetometerData();
 
 #endif
