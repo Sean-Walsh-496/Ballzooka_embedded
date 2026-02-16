@@ -9,5 +9,5 @@ extern BLEByteCharacteristic stateCharacteristic;
 // FUNCTIONS ===================================================================
 bool InitBluetooth();
 bool HasBluetoothConnection();
-
+void AdvertiseBluetooth();
 #endif

@@ -27,11 +27,10 @@ void PrintStatus() {
 
 void setup() {
   // set state machine to default
-  currentState = EnterConnect();
+  currentState = EnterConnect(true);
 
   // Init additional functionality
-  // InitBluetooth();
-  Wire.begin(); // begin I2c communication
+  // Wire.begin(); // begin I2c communication
   // InitGY521();
   // InitSonar();
 
@@ -40,41 +39,26 @@ void setup() {
   delay(1000);
   Monitor.println("Ballzooka powered on.");
 
-
-  pinMode(PULSE_PIN, OUTPUT);
-  pinMode(HI_PIN, OUTPUT);
-
-  digitalWrite(PULSE_PIN, LOW);
-  digitalWrite(HI_PIN, HIGH);
-
 }
 
 void loop() {
+  // state machine behavior
+  if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread
+    currentState = EnterConnect(false);
+  }
 
+  switch(currentState) {
+    case CONNECT:
+      currentState = HandleConnect();
+      break;
+    case IDLE_SAFE:
+      currentState = HandleIdleSafe();
+      break;
+  }
 
-
-  digitalWrite(PULSE_PIN, LOW);
-  delay(10);
-  digitalWrite(PULSE_PIN, HIGH);
-  delay(10);
-
-
-  // GetMagnetometerData();
-  // delay(1000);
-
-  // // state machine behavior
-  // switch(currentState) {
-  //   case CONNECT:
-  //     currentState = HandleConnect();
-  //     break;
-  //   case IDLE_SAFE:
-  //     currentState = HandleIdleSafe();
-  //     break;
-  // }
-
-  // // log and change LED
-  // if (CONSOLE_LOGGING) {
-  //   PrintStatus();
-  // }
+  // log and change LED
+  if (CONSOLE_LOGGING) {
+    PrintStatus();
+  }
 
 }

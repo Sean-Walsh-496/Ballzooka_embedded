@@ -5,8 +5,13 @@
 const char* stateNames[NUM_STATES] = {"CONNECT", "IDLE_SAFE", "IDLE_DANGER", "REPOSITION", "STANDBY", "LAUNCH"};
 
 // Function Definitions ========================================================
-State EnterConnect() {
-  InitBluetooth();
+State EnterConnect(bool firstTime) {
+  if (firstTime) {
+    InitBluetooth();
+  }
+  else {
+    AdvertiseBluetooth();
+  }
   return CONNECT;
 }
 

@@ -27,9 +27,20 @@ The peripheral device can advertise several *services*, which act as logical
 groupings of individual pieces of data. These pieces of data, which may be read
 or written by the central device, are called *characteristics*.
 
+Two services are going to be advertised: the sensor service and the command 
+service.
+- The _Sensor Service_ will be a read-only service that, when requested from, 
+  returns the latest readings from relevant sensors to the Android application.
+- The _Command Service_ will be a read-write service that allows the application
+  to write commands to the Ballzooka, such as a target location.
 
-
-
+A heartbeat signal is sent periodically from the Ballzooka to the app to ensure 
+that the connection is still active. In order to save power, once a connection 
+is established, the Arduino-side of the BLE connection is entirely passive until
+a request is sent by the app. If the app crashes or gets outside of the BLE's 
+range, the Arduino will not know. For this reason, a heartbeat is sent to ensure
+the connection is stable, and if a connection is unexpectedly lost the Ballzooka
+can safely react.
 
 ### Sensors
 Multiple sensors can be found on the Ballzooka, the majority of which are I2C 
