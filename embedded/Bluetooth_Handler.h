@@ -3,11 +3,15 @@
 
 #include <ArduinoBLE.h>
 
-extern BLEService heartBeatService;
-extern BLEByteCharacteristic stateCharacteristic;
+extern BLEService sensorService;
+extern BLEByteCharacteristic HeadingCharacteristic;
+extern BLEByteCharacteristic PositionCharacteristic;
+extern BLEByteCharacteristic BatteryCharacteristic;
+extern BLEByteCharacteristic RPMCharacteristic;
 
 // FUNCTIONS ===================================================================
 bool InitBluetooth();
 bool HasBluetoothConnection();
 void AdvertiseBluetooth();
+void UpdateSensorService();
 #endif

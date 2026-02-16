@@ -42,11 +42,15 @@ void setup() {
 }
 
 void loop() {
-  // state machine behavior
+  // verify Bluetooth is still connected
   if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread
     currentState = EnterConnect(false);
   }
 
+  // update sensor service data
+  
+
+  // state machine
   switch(currentState) {
     case CONNECT:
       currentState = HandleConnect();

@@ -24,6 +24,19 @@ async def find_ballzooka():
     except:
         return False
 
+def check_services(client):
+    """
+    Prints out a list of available services and their UUIDs
+    """
+    print("Getting services...", flush=True)
+    services = client.services
+
+    print("Offered services:", flush=True)
+    for service in services:
+        print(f"{service}", flush=True)
+        for idx, char in enumerate(service.characteristics):
+            print(f"\t{idx + 1}. {char} ", flush=True)
+
 
 async def main():
     """
@@ -44,14 +57,7 @@ async def main():
             return
         print("Connection established", flush=True)
         
-        print("Getting services...", flush=True)
-        services = await client.get_services()
-
-        print("Offered services:", flush=True)
-        for service in services:
-            print(f"{service} (UUID={service.uuid})", flush=True)
-            for char in service.characteristics:
-                print(f"\t{char} (UUID={char.uuid})", flush=True)
+        check_services(client)
 
         test_char = await client.read_gatt_char(TEST_CHAR_UUID)
         print(test_char, flush=True)
