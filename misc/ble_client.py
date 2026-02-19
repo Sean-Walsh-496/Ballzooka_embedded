@@ -4,8 +4,13 @@ client. Enables you to debug BLE on Arduino from your PC.
 """
 
 # constants
-SENSOR_SERVICE_UUID = "ba10f731-f94d-45f8-8ccd-89e393b418f4"
-TEST_CHAR_UUID = "ba10f732-f94d-45f8-8ccd-89e393b418f4"
+UUIDs = {
+    "sensor_service":           "ba10f731-f94d-45f8-8ccd-89e393b418f4",
+    "heading_characteristic":   "ba10f732-f94d-45f8-8ccd-89e393b418f4",
+    "position_characteristic":  "ba10f733-f94d-45f8-8ccd-89e393b418f4",
+    "battery_characteristic":   "ba10f734-f94d-45f8-8ccd-89e393b418f4",
+    "RPM_characteristic":       "ba10f735-f94d-45f8-8ccd-89e393b418f4",
+}
 
 import asyncio
 from bleak import BleakScanner, BleakClient
@@ -17,7 +22,7 @@ async def find_ballzooka():
     """
     SCAN_TIME = 5.0
     print(f"Scanning for {SCAN_TIME} seconds, please wait...")
-    candidates = await BleakScanner.discover(SCAN_TIME, service_uuids=[SENSOR_SERVICE_UUID])
+    candidates = await BleakScanner.discover(SCAN_TIME, service_uuids=[UUIDs["sensor_service"]])
     
     try:
         return candidates[0] # discover returns a list of devices
@@ -59,8 +64,8 @@ async def main():
         
         check_services(client)
 
-        test_char = await client.read_gatt_char(TEST_CHAR_UUID)
-        print(test_char, flush=True)
+        test_char = await client.read_gatt_char(UUIDs["heading_characteristic"])
+        print(int.from_bytes(test_char, byteorder="little") / 100, flush=True)
 
     except asyncio.TimeoutError:
         print("ERROR: Async timeout")

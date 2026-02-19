@@ -4,10 +4,10 @@
 #include <ArduinoBLE.h>
 
 extern BLEService sensorService;
-extern BLEByteCharacteristic HeadingCharacteristic;
-extern BLEByteCharacteristic PositionCharacteristic;
-extern BLEByteCharacteristic BatteryCharacteristic;
-extern BLEByteCharacteristic RPMCharacteristic;
+extern BLEIntCharacteristic HeadingCharacteristic;
+extern BLEIntCharacteristic PositionCharacteristic;
+extern BLEIntCharacteristic BatteryCharacteristic;
+extern BLEIntCharacteristic RPMCharacteristic;
 
 // FUNCTIONS ===================================================================
 bool InitBluetooth();

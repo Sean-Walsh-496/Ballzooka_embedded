@@ -10,10 +10,6 @@
 // PROGRAM SETTINGS
 #define CONSOLE_LOGGING false
 
-#define PULSE_PIN D7
-#define HI_PIN D8
-
-
 // GLOBALS =====================================================================
 State currentState;
 
@@ -31,8 +27,9 @@ void setup() {
 
   // Init additional functionality
   // Wire.begin(); // begin I2c communication
-  // InitGY521();
+  InitGY521();
   // InitSonar();
+  // InitMagnetometer();
 
 
   Monitor.begin();
@@ -42,13 +39,27 @@ void setup() {
 }
 
 void loop() {
+  GY521Data data = GetGY521Data();
+  Monitor.println("Got data");
+  GY521Orientation orient = GetGY521Orientation(data);
+
+  Monitor.print("Pitch: ");
+  Monitor.println(orient.pitch);
+  Monitor.print("Roll: ");
+  Monitor.println(orient.roll);
+  Monitor.print("Yaw: ");
+  Monitor.println(orient.yaw);
+  Monitor.print("\n\n\n\n");
+
+  delay(1000);
+
   // verify Bluetooth is still connected
   if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread
     currentState = EnterConnect(false);
   }
 
   // update sensor service data
-  
+  UpdateSensorService();
 
   // state machine
   switch(currentState) {

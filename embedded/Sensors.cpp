@@ -1,9 +1,11 @@
 #include "Sensors.h"
-#include <Wire.h>
 #include <Arduino_RouterBridge.h>
+#include <LSM303AGR_MAG_Sensor.h>
+#include <math.h>
+#include <Wire.h>
 
 
-// GY-521 code
+// Addresses
 #define GY521Address 0x68
 #define SonarAddress 0x70
 #define LSM303AGR_ACC_ADDRESS 0x19 // 0011001X
@@ -13,6 +15,11 @@ struct {
   int scl;
   int sda;
 } Pins::GY521 = {B10, B11};
+
+
+// LSM303AGR Code
+LSM303AGR_MAG_Sensor Mag(&Wire);
+
 
 void InitGY521() {
 
@@ -32,22 +39,29 @@ GY521Data GetGY521Data() {
   Wire.requestFrom(GY521Address, 14, true); // 14 bytes of data
 
   // populate struct
-  ret.AcX=Wire.read()<<8|Wire.read();    
-  ret.AcY=Wire.read()<<8|Wire.read();  
-  ret.AcZ=Wire.read()<<8|Wire.read();  
-  ret.GyX=Wire.read()<<8|Wire.read();  
-  ret.GyY=Wire.read()<<8|Wire.read();  
-  ret.GyZ=Wire.read()<<8|Wire.read();
+  ret.AcX = Wire.read()<<8|Wire.read();    
+  ret.AcY = Wire.read()<<8|Wire.read();  
+  ret.AcZ = Wire.read()<<8|Wire.read(); 
+  ret.Tmp = Wire.read()<<8|Wire.read(); 
+  ret.GyX = Wire.read()<<8|Wire.read();  
+  ret.GyY = Wire.read()<<8|Wire.read();  
+  ret.GyZ = Wire.read()<<8|Wire.read();
 
   return ret;
 }
 
 GY521Orientation GetGY521Orientation(const GY521Data& data) {
   GY521Orientation ret;
-  ret.pitch = atan( data.AcX / sqrt((data.AcY * data.AcY) + (data.AcZ * data.AcZ)));
-  ret.roll = atan(data.AcY / sqrt((data.AcX * data.AcX) + (data.AcZ * data.AcZ)));
+  double x = data.AcX;
+  double y = data.AcY;
+  double z = data.AcZ;
+  
+  ret.pitch = atan( x / sqrt((y * y) + (z * z)));
+  ret.roll = atan(y / sqrt((x * x) + (z * z)));
   ret.pitch = ret.pitch * (180.0 / 3.14);
   ret.roll = ret.roll * (180.0 / 3.14) ;  
+
+  return ret;
 }
 
 // Sonar code
@@ -70,34 +84,46 @@ int GetSonarData() {
 }
 
 void InitMagnetometer() {
-  Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
+  // Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
   // Wire.write()
+  Mag.begin();
+  Mag.Enable();
 }
 
 
 LSM303AGRData GetMagnetometerData() {
   LSM303AGRData ret;
+  int32_t data[3];
+  Mag.GetAxes(data);
 
-  const int ADDRESSES[] = {0x69, 0x68, 0x6B, 0x6A, 0x6D, 0x6C};
-  for (int i = 0; i < 6; i+=2) { // TODO: make this suck less
-    int test;
-    Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
-    Wire.write(ADDRESSES[i]);
-    Wire.endTransmission(false);
-    Wire.requestFrom(LSM303AGR_MAG_ADDRESS, 1, true);
+  ret.MagX = data[0];
+  ret.MagY = data[1];
+  ret.MagZ = data[2];
 
-    test = Wire.read();
-    test<<8;
+  // const int ADDRESSES[] = {0x69, 0x68, 0x6B, 0x6A, 0x6D, 0x6C};
+  // for (int i = 0; i < 6; i+=2) { // TODO: make this suck less
+  //   int test;
+  //   Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
+  //   Wire.write(ADDRESSES[i]);
+  //   Wire.endTransmission(false);
+  //   Wire.requestFrom(LSM303AGR_MAG_ADDRESS, 1, true);
 
-    Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
-    Wire.write(ADDRESSES[i + 1]);
-    Wire.endTransmission(false);
-    Wire.requestFrom(LSM303AGR_MAG_ADDRESS, 1, true);
+  //   test = Wire.read();
+  //   test<<8;
 
-    test |= Wire.read();
+  //   Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
+  //   Wire.write(ADDRESSES[i + 1]);
+  //   Wire.endTransmission(false);
+  //   Wire.requestFrom(LSM303AGR_MAG_ADDRESS, 1, true);
 
-    Monitor.println(test);
-  }
+  //   test |= Wire.read();
+
+  //   Monitor.println(test);
+  // }
 
   return ret;
+}
+
+int GetHeading() {
+  return 201800; // TODO: implement this function
 }
