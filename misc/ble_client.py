@@ -7,7 +7,8 @@ client. Enables you to debug BLE on Arduino from your PC.
 UUIDs = {
     "sensor_service":           "ba10f731-f94d-45f8-8ccd-89e393b418f4",
     "heading_characteristic":   "ba10f732-f94d-45f8-8ccd-89e393b418f4",
-    "position_characteristic":  "ba10f733-f94d-45f8-8ccd-89e393b418f4",
+    "lat_characteristic":       "ba10f733-f94d-45f8-8ccd-89e393b418f4",
+    "lon_characteristic":       "ba10f736-f94d-45f8-8ccd-89e393b418f4",
     "battery_characteristic":   "ba10f734-f94d-45f8-8ccd-89e393b418f4",
     "RPM_characteristic":       "ba10f735-f94d-45f8-8ccd-89e393b418f4",
 }
@@ -64,8 +65,12 @@ async def main():
         
         check_services(client)
 
-        test_char = await client.read_gatt_char(UUIDs["heading_characteristic"])
-        print(int.from_bytes(test_char, byteorder="little") / 100, flush=True)
+        heading = await client.read_gatt_char(UUIDs["heading_characteristic"])
+        lat = await client.read_gatt_char(UUIDs["lat_characteristic"])
+        lon = await client.read_gatt_char(UUIDs["lon_characteristic"])
+        print(f"HEADING: {int.from_bytes(heading, byteorder="little") / 100}", flush=True)
+        print(f"LAT: {int.from_bytes(lat, byteorder="little") / 1000}", flush=True)
+        print(f"LON: {int.from_bytes(lon, byteorder="little") / 1000}", flush=True)
 
     except asyncio.TimeoutError:
         print("ERROR: Async timeout")

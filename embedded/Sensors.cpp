@@ -1,6 +1,8 @@
 #include "Sensors.h"
+#include <Adafruit_AMG88xx.h>
 #include <Arduino_RouterBridge.h>
 #include <LSM303AGR_MAG_Sensor.h>
+#include <TinyGPSPlus.h>
 #include <math.h>
 #include <Wire.h>
 
@@ -11,6 +13,11 @@
 #define LSM303AGR_ACC_ADDRESS 0x19 // 0011001X
 #define LSM303AGR_MAG_ADDRESS 0x1E //0011110b
 
+// Pins
+#define UART_RX D0
+#define UART_TX D1
+#define GPS_BAUD_RATE 9600
+
 struct {
   int scl;
   int sda;
@@ -19,6 +26,9 @@ struct {
 
 // LSM303AGR Code
 LSM303AGR_MAG_Sensor Mag(&Wire);
+
+// GPS Code
+TinyGPSPlus gps;
 
 
 void InitGY521() {
@@ -126,4 +136,20 @@ LSM303AGRData GetMagnetometerData() {
 
 int GetHeading() {
   return 201800; // TODO: implement this function
+}
+
+void InitGPS() {
+  Serial.begin(GPS_BAUD_RATE);
+}
+
+GPSData GetGPSData() {
+  GPSData ret;
+  while (Serial.available()) { // while there is input at UART pins
+    gps.encode((char)Serial.read()); // TinyGPSPlus handles the NMEA encoding
+  }
+
+  ret.lat = gps.location.lat();
+  ret.lon = gps.location.lng();
+  ret.hdop = gps.hdop.hdop();
+  return ret;
 }

@@ -30,6 +30,7 @@ void setup() {
   InitGY521();
   // InitSonar();
   // InitMagnetometer();
+  InitGPS();
 
 
   Monitor.begin();
@@ -39,17 +40,9 @@ void setup() {
 }
 
 void loop() {
-  GY521Data data = GetGY521Data();
-  Monitor.println("Got data");
-  GY521Orientation orient = GetGY521Orientation(data);
-
-  Monitor.print("Pitch: ");
-  Monitor.println(orient.pitch);
-  Monitor.print("Roll: ");
-  Monitor.println(orient.roll);
-  Monitor.print("Yaw: ");
-  Monitor.println(orient.yaw);
-  Monitor.print("\n\n\n\n");
+  GPSData ret = GetGPSData();
+  Monitor.println(ret.lon);
+  Monitor.println(ret.lat);
 
   delay(1000);
 

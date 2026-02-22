@@ -21,13 +21,17 @@ struct GY521Orientation {
   double yaw;
 };
 
-
 struct LSM303AGRData {
   int MagX;
   int MagY;
   int MagZ;
 };
 
+struct GPSData {
+  double lat;
+  double lon;
+  double hdop;
+};
 
 
 void InitGY521();
@@ -41,5 +45,10 @@ int GetSonarData();
 void InitMagnetometer();
 LSM303AGRData GetMagnetometerData();
 int GetHeading();
+
+
+void InitGPS();
+GPSData GetGPSData();
+
 
 #endif
