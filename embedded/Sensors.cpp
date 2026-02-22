@@ -24,11 +24,10 @@ struct {
 } Pins::GY521 = {B10, B11};
 
 
-// LSM303AGR Code
-LSM303AGR_MAG_Sensor Mag(&Wire);
-
-// GPS Code
-TinyGPSPlus gps;
+// init sensor objects
+LSM303AGR_MAG_Sensor Mag(&Wire); // magnetometer
+TinyGPSPlus gps;                 // GPS
+Adafruit_AMG88xx ThermalCamera;  // Thermal camera
 
 
 void InitGY521() {
@@ -139,7 +138,7 @@ int GetHeading() {
 }
 
 void InitGPS() {
-  Serial.begin(GPS_BAUD_RATE);
+  Serial.begin(GPS_BAUD_RATE); // GPS is connected to UART TX and RX pins
 }
 
 GPSData GetGPSData() {
@@ -152,4 +151,14 @@ GPSData GetGPSData() {
   ret.lon = gps.location.lng();
   ret.hdop = gps.hdop.hdop();
   return ret;
+}
+
+void InitThermalCamera() {
+  if (!ThermalCamera.begin()) {
+    Monitor.println("ERROR ENCOUNTERED WHILE STARTING THERMAL CAMERA!!");
+  } 
+}
+
+void GetThermalCameraData(float* pixels) {
+  ThermalCamera.readPixels(pixels); // TODO: don't use C-style arrays to prevent out-of-bounds indexing
 }

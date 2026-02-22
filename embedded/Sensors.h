@@ -50,5 +50,7 @@ int GetHeading();
 void InitGPS();
 GPSData GetGPSData();
 
+void InitThermalCamera();
+void GetThermalCameraData(float* pixels);
 
 #endif

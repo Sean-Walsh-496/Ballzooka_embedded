@@ -20,17 +20,17 @@ void PrintStatus() {
   Monitor.println(stateNames[currentState]);
 }
 
-
 void setup() {
   // set state machine to default
   currentState = EnterConnect(true);
 
   // Init additional functionality
-  // Wire.begin(); // begin I2c communication
-  InitGY521();
+  Wire.begin(); // begin I2c communication
+  // InitGY521();
   // InitSonar();
   // InitMagnetometer();
-  InitGPS();
+  // InitGPS();
+  InitThermalCamera();
 
 
   Monitor.begin();
@@ -39,12 +39,21 @@ void setup() {
 
 }
 
+float pixels[64];
 void loop() {
-  GPSData ret = GetGPSData();
-  Monitor.println(ret.lon);
-  Monitor.println(ret.lat);
+
+  GetThermalCameraData(pixels);
+  Monitor.print("[ ");
+  for (int i = 0; i < 64; i++) {
+    Monitor.print(pixels[i]);
+    Monitor.println(",");
+  }
+  Monitor.println("]");
 
   delay(1000);
+
+
+
 
   // verify Bluetooth is still connected
   if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread
