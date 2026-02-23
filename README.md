@@ -1,7 +1,7 @@
 # Ballzooka Embedded Code
 
 Contains all source code and documentation related to the ballzooka's embedded
-software
+software.
 
 ## Installation
 The "/embedded" directory contains all Arduino source. Opening this in the 
