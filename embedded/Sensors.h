@@ -52,5 +52,6 @@ GPSData GetGPSData();
 
 void InitThermalCamera();
 void GetThermalCameraData(float* pixels);
+void GetSerialThermalCameraData();
 
 #endif

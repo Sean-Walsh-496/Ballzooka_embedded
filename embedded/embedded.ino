@@ -24,36 +24,42 @@ void setup() {
   // set state machine to default
   currentState = EnterConnect(true);
 
-  // Init additional functionality
+  // Init sensors
   Wire.begin(); // begin I2c communication
   // InitGY521();
   // InitSonar();
   // InitMagnetometer();
-  // InitGPS();
-  InitThermalCamera();
+  InitGPS();
+  // InitThermalCamera();
+
+  // Offers some functions to the MPU
+  Bridge.begin(); // initialize software bridge between MCU and MPU
 
 
-  Monitor.begin();
-  delay(1000);
+  Monitor.begin(); // init console logging
+  delay(1000); // wait for Monitor to initiaize (not really necessary just being safe)
   Monitor.println("Ballzooka powered on.");
 
 }
-
-float pixels[64];
 void loop() {
 
-  GetThermalCameraData(pixels);
-  Monitor.print("[ ");
-  for (int i = 0; i < 64; i++) {
-    Monitor.print(pixels[i]);
-    Monitor.println(",");
+
+  // GPSData data = GetGPSData();
+  // Monitor.println(data.lat);
+  // Monitor.println(data.lon);
+
+  bool detected_human;
+  RpcCall async_res = Bridge.call("analyze_thermal_data", "0,0,0");
+  if (async_res.result(detected_human)) {
+    Monitor.println("success");
   }
-  Monitor.println("]");
+  else {
+    Monitor.println("Error code: " + String(async_res.getErrorCode()));
+    Monitor.println("Error message: " + async_res.getErrorMessage());
+  }
+
 
   delay(1000);
-
-
-
 
   // verify Bluetooth is still connected
   if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread
