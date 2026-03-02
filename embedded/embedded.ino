@@ -28,12 +28,12 @@ void setup() {
   Wire.begin(); // begin I2c communication
   // InitGY521();
   // InitSonar();
-  // InitMagnetometer();
-  InitGPS();
+  InitMagnetometer();
+  // InitGPS();
   // InitThermalCamera();
 
   // Offers some functions to the MPU
-  Bridge.begin(); // initialize software bridge between MCU and MPU
+  // Bridge.begin(); // initialize software bridge between MCU and MPU
 
 
   Monitor.begin(); // init console logging
@@ -43,22 +43,12 @@ void setup() {
 }
 void loop() {
 
-
-  // GPSData data = GetGPSData();
-  // Monitor.println(data.lat);
-  // Monitor.println(data.lon);
-
-  bool detected_human;
-  RpcCall async_res = Bridge.call("analyze_thermal_data", "0,0,0");
-  if (async_res.result(detected_human)) {
-    Monitor.println("success");
-  }
-  else {
-    Monitor.println("Error code: " + String(async_res.getErrorCode()));
-    Monitor.println("Error message: " + async_res.getErrorMessage());
-  }
-
-
+  LSM303AGRData data = GetMagnetometerData();
+  Monitor.println("X: " + String(data.MagX));
+  Monitor.println("Y: " + String(data.MagY));
+  Monitor.println("Z: " + String(data.MagZ));
+  Monitor.println("Heading: " + String(GetHeading()));
+  Monitor.println("\r\n\r\n\r\n\r\n");
   delay(1000);
 
   // verify Bluetooth is still connected

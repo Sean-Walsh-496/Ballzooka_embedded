@@ -1,7 +1,7 @@
 #include "Sensors.h"
 #include <Adafruit_AMG88xx.h>
 #include <Arduino_RouterBridge.h>
-#include <LSM303AGR_MAG_Sensor.h>
+#include <Adafruit_LIS2MDL.h>
 #include <TinyGPSPlus.h>
 #include <math.h>
 #include <Wire.h>
@@ -18,6 +18,12 @@
 #define UART_TX D1
 #define GPS_BAUD_RATE 9600
 
+const double MAG_OFFSETS[3] = { // use calibration script taken from Adafruit website
+  (13.50 - 86.55) / 2.0, // x
+  (77.85 - 37.45) / 2.0, // y
+  (78.60 - 45.55) / 2.0  // z
+};
+
 struct {
   int scl;
   int sda;
@@ -25,7 +31,7 @@ struct {
 
 
 // init sensor objects
-LSM303AGR_MAG_Sensor Mag(&Wire);
+Adafruit_LIS2MDL Mag = Adafruit_LIS2MDL(12345);
 TinyGPSPlus gps;                 // GPS
 Adafruit_AMG88xx ThermalCamera;  // Thermal camera
 
@@ -93,26 +99,37 @@ int GetSonarData() {
 }
 
 void InitMagnetometer() {
+  if (!Mag.begin()) {
+    Monitor.println("Something went wrong initializing the magnetometer");
+  }
   Mag.begin();
-  Mag.Enable();
-
 }
 
 
 LSM303AGRData GetMagnetometerData() {
+  sensors_event_t event;
   LSM303AGRData ret;
   int32_t data[3];
-  Mag.GetAxes(data);
 
-  ret.MagX = data[0];
-  ret.MagY = data[1];
-  ret.MagZ = data[2];
+  Mag.getEvent(&event);
+
+  ret.MagX = event.magnetic.x;
+  ret.MagY = event.magnetic.y;
+  ret.MagZ = event.magnetic.z;
 
   return ret;
 }
 
-int GetHeading() {
-  return 201800; // TODO: implement this function
+float GetHeading() {
+  float heading;
+
+  LSM303AGRData data = GetMagnetometerData(); // expressed in mG
+  heading = atan2(data.MagY - MAG_OFFSETS[1], data.MagX - MAG_OFFSETS[0]) * (180.0 / 3.141592);
+
+  if (heading < 0) {
+    return heading + 360;
+  }
+  return heading;
 }
 
 void InitGPS() {

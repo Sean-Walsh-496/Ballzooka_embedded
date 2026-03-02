@@ -44,7 +44,7 @@ int GetSonarData();
 
 void InitMagnetometer();
 LSM303AGRData GetMagnetometerData();
-int GetHeading();
+float GetHeading();
 
 
 void InitGPS();

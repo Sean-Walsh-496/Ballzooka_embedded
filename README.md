@@ -62,4 +62,8 @@ into a single integer which represents the read distance in CM.
 
 
 #### Magnetometer
-
+The magnetometer is controlled primarily through an external library due to the
+complexity of managing the register reads directly. The magnetometer outputs raw
+bit values that correspond to some number of mG (milligauss). The sensitivity of 
+how many mg correspond to the raw digital output is determined by a sensitivity
+parameter which can be set through I2C.
