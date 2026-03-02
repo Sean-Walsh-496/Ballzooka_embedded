@@ -25,7 +25,7 @@ struct {
 
 
 // init sensor objects
-LSM303AGR_MAG_Sensor Mag(&Wire); // magnetometer
+LSM303AGR_MAG_Sensor Mag(&Wire);
 TinyGPSPlus gps;                 // GPS
 Adafruit_AMG88xx ThermalCamera;  // Thermal camera
 
@@ -93,10 +93,9 @@ int GetSonarData() {
 }
 
 void InitMagnetometer() {
-  // Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
-  // Wire.write()
   Mag.begin();
   Mag.Enable();
+
 }
 
 
@@ -108,27 +107,6 @@ LSM303AGRData GetMagnetometerData() {
   ret.MagX = data[0];
   ret.MagY = data[1];
   ret.MagZ = data[2];
-
-  // const int ADDRESSES[] = {0x69, 0x68, 0x6B, 0x6A, 0x6D, 0x6C};
-  // for (int i = 0; i < 6; i+=2) { // TODO: make this suck less
-  //   int test;
-  //   Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
-  //   Wire.write(ADDRESSES[i]);
-  //   Wire.endTransmission(false);
-  //   Wire.requestFrom(LSM303AGR_MAG_ADDRESS, 1, true);
-
-  //   test = Wire.read();
-  //   test<<8;
-
-  //   Wire.beginTransmission(LSM303AGR_MAG_ADDRESS);
-  //   Wire.write(ADDRESSES[i + 1]);
-  //   Wire.endTransmission(false);
-  //   Wire.requestFrom(LSM303AGR_MAG_ADDRESS, 1, true);
-
-  //   test |= Wire.read();
-
-  //   Monitor.println(test);
-  // }
 
   return ret;
 }
