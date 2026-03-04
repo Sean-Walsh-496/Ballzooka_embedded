@@ -139,8 +139,11 @@ void InitGPS() {
 GPSData GetGPSData() {
   GPSData ret;
   while (Serial.available()) { // while there is input at UART pins
-    gps.encode((char)Serial.read()); // TinyGPSPlus handles the NMEA encoding
+    char x = (char)Serial.read();
+    Monitor.print(x);
+    gps.encode(x); // TinyGPSPlus handles the NMEA encoding
   }
+  Monitor.println("");
 
   ret.lat = gps.location.lat();
   ret.lon = gps.location.lng();
@@ -156,4 +159,9 @@ void InitThermalCamera() {
 
 void GetThermalCameraData(float* pixels) {
   ThermalCamera.readPixels(pixels); // TODO: don't use C-style arrays to prevent out-of-bounds indexing
+}
+
+bool IsPersonDetected() { // TODO: finish this function!
+  const int DETECTION_CUTOFF = 40; 
+  return GetSonarData() < DETECTION_CUTOFF;
 }

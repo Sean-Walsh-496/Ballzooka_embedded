@@ -5,6 +5,7 @@
 #include "Bluetooth_Handler.h"
 #include "Sensors.h"
 #include "State_Machine.h"
+#include "Bluetooth_Handler.h"
 
 
 // PROGRAM SETTINGS
@@ -26,10 +27,11 @@ void setup() {
 
   // Init sensors
   Wire.begin(); // begin I2c communication
+  // Serial.begin(115200);
   // InitGY521();
-  // InitSonar();
+  InitSonar();
   InitMagnetometer();
-  // InitGPS();
+  InitGPS();
   // InitThermalCamera();
 
   // Offers some functions to the MPU
@@ -39,16 +41,19 @@ void setup() {
   Monitor.begin(); // init console logging
   delay(1000); // wait for Monitor to initiaize (not really necessary just being safe)
   Monitor.println("Ballzooka powered on.");
-
+  
+  pinMode(LED3_R, OUTPUT);
 }
-void loop() {
 
-  LSM303AGRData data = GetMagnetometerData();
-  Monitor.println("X: " + String(data.MagX));
-  Monitor.println("Y: " + String(data.MagY));
-  Monitor.println("Z: " + String(data.MagZ));
-  Monitor.println("Heading: " + String(GetHeading()));
-  Monitor.println("\r\n\r\n\r\n\r\n");
+int count = 0;
+void loop() {
+  count++;
+  // Serial1.println("HELLO");
+  // Monitor.println("Transmitting HELLO");
+
+
+  Monitor.println(GetSonarData());
+  digitalWrite(LED3_R, count % 2);
   delay(1000);
 
   // verify Bluetooth is still connected

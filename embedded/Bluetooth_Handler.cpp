@@ -8,13 +8,23 @@
 #define LON_CHARACTERISTIC_UUID "ba10f736-f94d-45f8-8ccd-89e393b418f4"
 #define BATTERY_CHARACTERISTIC_UUID "ba10f734-f94d-45f8-8ccd-89e393b418f4"
 #define RPM_CHARACTERISTIC_UUID "ba10f735-f94d-45f8-8ccd-89e393b418f4"
+#define PERSON_DETECTED_CHARACTERISTIC_UUID "ba10f737-f94d-45f8-8ccd-89e393b418f4"
 
-BLEService sensorService(SENSOR_SERVICE_UUID); //                    two-byte integers
-BLEIntCharacteristic HeadingCharacteristic(HEADING_CHARACTERISTIC_UUID, BLERead);
-BLEIntCharacteristic LonCharacteristic(LON_CHARACTERISTIC_UUID, BLERead);
-BLEIntCharacteristic LatCharacteristic(LAT_CHARACTERISTIC_UUID, BLERead);
-BLEIntCharacteristic BatteryCharacteristic(BATTERY_CHARACTERISTIC_UUID, BLERead);
-BLEIntCharacteristic RPMCharacteristic(RPM_CHARACTERISTIC_UUID, BLERead);
+BLEService                sensorService(SENSOR_SERVICE_UUID); //              two-byte integers
+BLEDoubleCharacteristic   HeadingCharacteristic(HEADING_CHARACTERISTIC_UUID, BLERead | BLENotify);
+BLEDoubleCharacteristic   LonCharacteristic(LON_CHARACTERISTIC_UUID, BLERead | BLENotify);
+BLEDoubleCharacteristic   LatCharacteristic(LAT_CHARACTERISTIC_UUID, BLERead | BLENotify);
+BLEIntCharacteristic      BatteryCharacteristic(BATTERY_CHARACTERISTIC_UUID, BLERead);
+BLEIntCharacteristic      RPMCharacteristic(RPM_CHARACTERISTIC_UUID, BLERead);
+BLEBoolCharacteristic     PersonDetectedCharacteristic(PERSON_DETECTED_CHARACTERISTIC_UUID, BLERead | BLENotify);
+
+BLEDescriptor HeadingClientDescriptor("2902", "1");
+BLEDescriptor LatClientDescriptor("2902", "1");
+BLEDescriptor LonClientDescriptor("2902", "1");
+BLEDescriptor BatteryClientDescriptor("2902", "1");
+BLEDescriptor RPMClientDescriptor("2902", "1");
+BLEDescriptor PersonDetectedClientDescriptor("2902", "1");
+
 
 // FUNCTION DEFINITIONS ========================================================
 bool InitBluetooth() {
@@ -33,16 +43,27 @@ bool InitBluetooth() {
     sensorService.addCharacteristic(LatCharacteristic);
     sensorService.addCharacteristic(BatteryCharacteristic);
     sensorService.addCharacteristic(RPMCharacteristic);
+    sensorService.addCharacteristic(PersonDetectedCharacteristic);
+
+    // add descriptors to each characteristic
+    HeadingCharacteristic.addDescriptor(HeadingClientDescriptor);
+    LatCharacteristic.addDescriptor(LatClientDescriptor);
+    LonCharacteristic.addDescriptor(LonClientDescriptor);
+    BatteryCharacteristic.addDescriptor(BatteryClientDescriptor);
+    RPMCharacteristic.addDescriptor(RPMClientDescriptor);
+    PersonDetectedCharacteristic.addDescriptor(PersonDetectedClientDescriptor);
+
 
     // init the service
     BLE.addService(sensorService);
 
     // write initial values
-    HeadingCharacteristic.writeValue(0);
-    LonCharacteristic.writeValue(0);
-    LatCharacteristic.writeValue(0);
+    HeadingCharacteristic.writeValue(0.0);
+    LonCharacteristic.writeValue(0.0);
+    LatCharacteristic.writeValue(0.0);
     BatteryCharacteristic.writeValue(0);
     RPMCharacteristic.writeValue(0);
+    PersonDetectedCharacteristic.writeValue(false);
 
     AdvertiseBluetooth();
     return true;
@@ -64,12 +85,33 @@ bool HasBluetoothConnection() {
  * values
  */
 void UpdateSensorService() {
-  // heading update
+
+  // get values
+  float heading = GetHeading();
+  GPSData pos = GetGPSData();
+
+
+  // print values
+  Monitor.println("HEADING: " + String(heading));
+  Monitor.println("LAT: " + String(pos.lat));
+  Monitor.println("LON: " + String(pos.lon));
+  Monitor.println("\r\n\r\n");
+
   HeadingCharacteristic.setValue(GetHeading());
 
   // position update
-  GPSData pos = GetGPSData();
-  LonCharacteristic.setValue((int)(pos.lon ));
-  LatCharacteristic.setValue((int)(pos.lat * 1000));
+  LonCharacteristic.setValue(pos.lon);
+  LatCharacteristic.setValue(pos.lat);
+
+
+  
+  // verify device does not have people in front of it 
+  if (IsPersonDetected()) {
+    Monitor.println("PERSON DETECTED!!!!");
+    PersonDetectedCharacteristic.setValue(true);
+  }
+  else {
+    PersonDetectedCharacteristic.setValue(false);
+  }
 
 }

@@ -54,4 +54,6 @@ void InitThermalCamera();
 void GetThermalCameraData(float* pixels);
 void GetSerialThermalCameraData();
 
+bool IsPersonDetected();
+
 #endif
