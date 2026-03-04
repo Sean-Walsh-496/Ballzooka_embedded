@@ -162,6 +162,6 @@ void GetThermalCameraData(float* pixels) {
 }
 
 bool IsPersonDetected() { // TODO: finish this function!
-  const int DETECTION_CUTOFF = 40; 
+  const int DETECTION_CUTOFF = 150; 
   return GetSonarData() < DETECTION_CUTOFF;
 }
