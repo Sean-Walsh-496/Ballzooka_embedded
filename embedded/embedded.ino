@@ -3,13 +3,14 @@
 
 // User-defined libraries
 #include "Bluetooth_Handler.h"
+#include "Driving_Motor.h"
 #include "Sensors.h"
 #include "State_Machine.h"
 #include "Bluetooth_Handler.h"
 
 
 // PROGRAM SETTINGS
-#define CONSOLE_LOGGING false
+#define CONSOLE_LOGGING true
 
 // GLOBALS =====================================================================
 State currentState;
@@ -33,6 +34,9 @@ void setup() {
   InitMagnetometer();
   InitGPS();
   // InitThermalCamera();
+
+  // init flywheel motors
+  InitMotors();
 
   // Offers some functions to the MPU
   // Bridge.begin(); // initialize software bridge between MCU and MPU

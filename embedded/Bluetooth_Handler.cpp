@@ -1,5 +1,6 @@
 #include "Bluetooth_Handler.h"
 #include <Arduino_RouterBridge.h>
+#include "Driving_Motor.h"
 #include "Sensors.h"
 
 // service UUID 
@@ -10,7 +11,8 @@
 #define LAT_CHARACTERISTIC_UUID "ba10f733-f94d-45f8-8ccd-89e393b418f4"
 #define LON_CHARACTERISTIC_UUID "ba10f736-f94d-45f8-8ccd-89e393b418f4"
 #define BATTERY_CHARACTERISTIC_UUID "ba10f734-f94d-45f8-8ccd-89e393b418f4"
-#define RPM_CHARACTERISTIC_UUID "ba10f735-f94d-45f8-8ccd-89e393b418f4"
+#define LEFT_FLYWHEEL_RPM_CHARACTERISTIC_UUID "ba10f735-f94d-45f8-8ccd-89e393b418f4"
+#define RIGHT_FLYWHEEL_RPM_CHARACTERISTIC_UUID "ba10f73a-f94d-45f8-8ccd-89e393b418f4"
 #define PERSON_DETECTED_CHARACTERISTIC_UUID "ba10f737-f94d-45f8-8ccd-89e393b418f4"
 
 // COMMAND UUIDs
@@ -25,7 +27,8 @@ BLEDoubleCharacteristic   HeadingCharacteristic(HEADING_CHARACTERISTIC_UUID, BLE
 BLEDoubleCharacteristic   LonCharacteristic(LON_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEDoubleCharacteristic   LatCharacteristic(LAT_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEIntCharacteristic      BatteryCharacteristic(BATTERY_CHARACTERISTIC_UUID, BLERead);
-BLEIntCharacteristic      RPMCharacteristic(RPM_CHARACTERISTIC_UUID, BLERead);
+BLEIntCharacteristic      LeftFlywheelRPMCharacteristic(LEFT_FLYWHEEL_RPM_CHARACTERISTIC_UUID, BLERead);
+BLEIntCharacteristic      RightFlywheelRPMCharacteristic(RIGHT_FLYWHEEL_RPM_CHARACTERISTIC_UUID, BLERead);
 BLEBoolCharacteristic     PersonDetectedCharacteristic(PERSON_DETECTED_CHARACTERISTIC_UUID, BLERead | BLENotify);
 
 BLEDescriptor NotifyDescriptor("2902", "1");
@@ -52,7 +55,8 @@ bool InitBluetooth() {
     sensorService.addCharacteristic(LonCharacteristic);
     sensorService.addCharacteristic(LatCharacteristic);
     sensorService.addCharacteristic(BatteryCharacteristic);
-    sensorService.addCharacteristic(RPMCharacteristic);
+    sensorService.addCharacteristic(LeftFlywheelRPMCharacteristic);
+    sensorService.addCharacteristic(RightFlywheelRPMCharacteristic);
     sensorService.addCharacteristic(PersonDetectedCharacteristic);
     
     sensorService.addCharacteristic(CommandFlywheelRPMCharacteristic);
@@ -64,7 +68,8 @@ bool InitBluetooth() {
     LatCharacteristic.addDescriptor(NotifyDescriptor);
     LonCharacteristic.addDescriptor(NotifyDescriptor);
     BatteryCharacteristic.addDescriptor(NotifyDescriptor);
-    RPMCharacteristic.addDescriptor(NotifyDescriptor);
+    LeftFlywheelRPMCharacteristic.addDescriptor(NotifyDescriptor);
+    RightFlywheelRPMCharacteristic.addDescriptor(NotifyDescriptor);
     PersonDetectedCharacteristic.addDescriptor(NotifyDescriptor);
     CommandFlywheelRPMCharacteristic.addDescriptor(NotifyDescriptor);
     CommandLoaderAngleCharacteristic.addDescriptor(NotifyDescriptor);
@@ -78,7 +83,8 @@ bool InitBluetooth() {
     LonCharacteristic.writeValue(0.0);
     LatCharacteristic.writeValue(0.0);
     BatteryCharacteristic.writeValue(0);
-    RPMCharacteristic.writeValue(0);
+    LeftFlywheelRPMCharacteristic.writeValue(0);
+    RightFlywheelRPMCharacteristic.writeValue(0);
     PersonDetectedCharacteristic.writeValue(false);
     CommandFlywheelRPMCharacteristic.writeValue(0);
     CommandLoaderAngleCharacteristic.writeValue(0);
@@ -141,9 +147,7 @@ void UpdateSensorService() {
 void ExecuteCommands() {
   int val;
   if (CommandFlywheelRPMCharacteristic.written()) {
-    val = CommandFlywheelRPMCharacteristic.value();
-    Monitor.print("READING COMMAND FOR FLYWHEEL RPM: ");
-    // Monitor.println(val);
+    RespondToButton();
   }
 
   if (CommandLoaderAngleCharacteristic.written()) {

@@ -1,5 +1,49 @@
-// #include "Driving_Motor.h"
+#include "Driving_Motor.h"
+#include <Arduino_RouterBridge.h>
 
+#define LEFT_MOTOR_PWM_PIN D5
+#define RIGHT_MOTOR_PWM_PIN D6
+
+
+
+
+
+void RespondToButton() {
+  static bool isEnabled = false;
+  isEnabled = !isEnabled;
+
+  if (isEnabled) {
+    Monitor.println("ACTIVATING MOTORS");
+    StartMotors();
+  }
+  else {
+    Monitor.println("DEACTIVATING MOTORS");
+    StopMotors();
+  }
+}
+
+void InitMotors() {
+  pinMode(LEFT_MOTOR_PWM_PIN, OUTPUT);
+  pinMode(RIGHT_MOTOR_PWM_PIN, OUTPUT);
+}
+
+void StartMotors() {
+  int TARGET_VAL = 125;
+  analogWrite(LEFT_MOTOR_PWM_PIN, TARGET_VAL);
+  analogWrite(RIGHT_MOTOR_PWM_PIN, TARGET_VAL);
+}
+void StopMotors() {
+  analogWrite(LEFT_MOTOR_PWM_PIN, 0);
+  analogWrite(RIGHT_MOTOR_PWM_PIN, 0);  
+}
+
+int GetRPM(Side motor) {
+  int count = 0;
+  int previousMillis = 0;
+  const int PERIOD = 1000;
+  int last_pin_state = LOW;
+
+}
 
 // void setup() {
 //   currentState = CONNECT;

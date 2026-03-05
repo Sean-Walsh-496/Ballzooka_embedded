@@ -1,9 +1,17 @@
 // #ifndef DRIVING_MOTOR_H
 // #define DRIVING_MOTOR_H
 
+enum Side {
+  LEFT,
+  RIGHT
+};
 
-// #define LEFT_FLYWHEEL_HALL_PIN D7
+void RespondToButton();
+void InitMotors();
+void StartMotors();
+void StopMotors();
 
+int GetRPM(Side motor);
 
 
 
