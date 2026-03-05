@@ -2,7 +2,10 @@
 #include <Arduino_RouterBridge.h>
 #include "Sensors.h"
 
+// service UUID 
 #define SENSOR_SERVICE_UUID "ba10f731-f94d-45f8-8ccd-89e393b418f4"
+
+// RAW SENSOR READING UUIDs
 #define HEADING_CHARACTERISTIC_UUID "ba10f732-f94d-45f8-8ccd-89e393b418f4"
 #define LAT_CHARACTERISTIC_UUID "ba10f733-f94d-45f8-8ccd-89e393b418f4"
 #define LON_CHARACTERISTIC_UUID "ba10f736-f94d-45f8-8ccd-89e393b418f4"
@@ -10,7 +13,14 @@
 #define RPM_CHARACTERISTIC_UUID "ba10f735-f94d-45f8-8ccd-89e393b418f4"
 #define PERSON_DETECTED_CHARACTERISTIC_UUID "ba10f737-f94d-45f8-8ccd-89e393b418f4"
 
-BLEService                sensorService(SENSOR_SERVICE_UUID); //              two-byte integers
+// COMMAND UUIDs
+#define COMMAND_FLYWHEEL_RPM "ba10f738-f94d-45f8-8ccd-89e393b418f4"
+#define COMMAND_LOADER_ANGLE "ba10f739-f94d-45f8-8ccd-89e393b418f4"
+
+
+BLEService                sensorService(SENSOR_SERVICE_UUID);
+
+// RAW CHARACTERISTICS FROM SENSORS
 BLEDoubleCharacteristic   HeadingCharacteristic(HEADING_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEDoubleCharacteristic   LonCharacteristic(LON_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEDoubleCharacteristic   LatCharacteristic(LAT_CHARACTERISTIC_UUID, BLERead | BLENotify);
@@ -18,12 +28,12 @@ BLEIntCharacteristic      BatteryCharacteristic(BATTERY_CHARACTERISTIC_UUID, BLE
 BLEIntCharacteristic      RPMCharacteristic(RPM_CHARACTERISTIC_UUID, BLERead);
 BLEBoolCharacteristic     PersonDetectedCharacteristic(PERSON_DETECTED_CHARACTERISTIC_UUID, BLERead | BLENotify);
 
-BLEDescriptor HeadingClientDescriptor("2902", "1");
-BLEDescriptor LatClientDescriptor("2902", "1");
-BLEDescriptor LonClientDescriptor("2902", "1");
-BLEDescriptor BatteryClientDescriptor("2902", "1");
-BLEDescriptor RPMClientDescriptor("2902", "1");
-BLEDescriptor PersonDetectedClientDescriptor("2902", "1");
+BLEDescriptor NotifyDescriptor("2902", "1");
+
+// COMMAND CHARACTERISTICS FROM APP
+BLEIntCharacteristic CommandFlywheelRPMCharacteristic(COMMAND_FLYWHEEL_RPM, BLERead | BLEWrite | BLENotify);
+BLEIntCharacteristic CommandLoaderAngleCharacteristic(COMMAND_LOADER_ANGLE, BLERead | BLEWrite | BLENotify);
+
 
 
 // FUNCTION DEFINITIONS ========================================================
@@ -44,14 +54,20 @@ bool InitBluetooth() {
     sensorService.addCharacteristic(BatteryCharacteristic);
     sensorService.addCharacteristic(RPMCharacteristic);
     sensorService.addCharacteristic(PersonDetectedCharacteristic);
+    
+    sensorService.addCharacteristic(CommandFlywheelRPMCharacteristic);
+    sensorService.addCharacteristic(CommandLoaderAngleCharacteristic);
+    
 
     // add descriptors to each characteristic
-    HeadingCharacteristic.addDescriptor(HeadingClientDescriptor);
-    LatCharacteristic.addDescriptor(LatClientDescriptor);
-    LonCharacteristic.addDescriptor(LonClientDescriptor);
-    BatteryCharacteristic.addDescriptor(BatteryClientDescriptor);
-    RPMCharacteristic.addDescriptor(RPMClientDescriptor);
-    PersonDetectedCharacteristic.addDescriptor(PersonDetectedClientDescriptor);
+    HeadingCharacteristic.addDescriptor(NotifyDescriptor);
+    LatCharacteristic.addDescriptor(NotifyDescriptor);
+    LonCharacteristic.addDescriptor(NotifyDescriptor);
+    BatteryCharacteristic.addDescriptor(NotifyDescriptor);
+    RPMCharacteristic.addDescriptor(NotifyDescriptor);
+    PersonDetectedCharacteristic.addDescriptor(NotifyDescriptor);
+    CommandFlywheelRPMCharacteristic.addDescriptor(NotifyDescriptor);
+    CommandLoaderAngleCharacteristic.addDescriptor(NotifyDescriptor);
 
 
     // init the service
@@ -64,6 +80,8 @@ bool InitBluetooth() {
     BatteryCharacteristic.writeValue(0);
     RPMCharacteristic.writeValue(0);
     PersonDetectedCharacteristic.writeValue(false);
+    CommandFlywheelRPMCharacteristic.writeValue(0);
+    CommandLoaderAngleCharacteristic.writeValue(0);
 
     AdvertiseBluetooth();
     return true;
@@ -114,4 +132,23 @@ void UpdateSensorService() {
     PersonDetectedCharacteristic.setValue(false);
   }
 
+}
+
+/**
+ * @brief Checks if the Bluetooth app has sent any commands and executes 
+ * whatever has been received
+ */
+void ExecuteCommands() {
+  int val;
+  if (CommandFlywheelRPMCharacteristic.written()) {
+    val = CommandFlywheelRPMCharacteristic.value();
+    Monitor.print("READING COMMAND FOR FLYWHEEL RPM: ");
+    // Monitor.println(val);
+  }
+
+  if (CommandLoaderAngleCharacteristic.written()) {
+    val = CommandLoaderAngleCharacteristic.value();
+    Monitor.print("READING COMMAND FOR LOADER ANGLE: ");
+    // Monitor.println(val);
+  }
 }

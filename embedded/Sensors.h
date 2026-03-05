@@ -56,4 +56,5 @@ void GetSerialThermalCameraData();
 
 bool IsPersonDetected();
 
+
 #endif

@@ -19,4 +19,5 @@ bool InitBluetooth();
 bool HasBluetoothConnection();
 void AdvertiseBluetooth();
 void UpdateSensorService();
+void ExecuteCommands();
 #endif

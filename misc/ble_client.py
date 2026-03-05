@@ -11,6 +11,8 @@ UUIDs = {
     "lon_characteristic":       "ba10f736-f94d-45f8-8ccd-89e393b418f4",
     "battery_characteristic":   "ba10f734-f94d-45f8-8ccd-89e393b418f4",
     "RPM_characteristic":       "ba10f735-f94d-45f8-8ccd-89e393b418f4",
+    "COMMAND_FLYWHEEL_RPM":     "ba10f738-f94d-45f8-8ccd-89e393b418f4",
+    "COMMAND_LOADER_ANGLE":     "ba10f739-f94d-45f8-8ccd-89e393b418f4"
 }
 
 import asyncio
@@ -64,13 +66,7 @@ async def main():
         print("Connection established", flush=True)
         
         check_services(client)
-
-        heading = await client.read_gatt_char(UUIDs["heading_characteristic"])
-        lat = await client.read_gatt_char(UUIDs["lat_characteristic"])
-        lon = await client.read_gatt_char(UUIDs["lon_characteristic"])
-        print(f"HEADING: {int.from_bytes(heading, byteorder="little") / 100}", flush=True)
-        print(f"LAT: {int.from_bytes(lat, byteorder="little") / 1000}", flush=True)
-        print(f"LON: {int.from_bytes(lon, byteorder="little") / 1000}", flush=True)
+        client.write_gatt_char(UUIDs["COMMAND_LOADER_ANGLE"], b"12938")
 
     except asyncio.TimeoutError:
         print("ERROR: Async timeout")

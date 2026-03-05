@@ -64,6 +64,8 @@ void loop() {
   // update sensor service data
   UpdateSensorService();
 
+  ExecuteCommands();
+
   // state machine
   switch(currentState) {
     case CONNECT:
