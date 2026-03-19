@@ -55,6 +55,15 @@ Multiple sensors can be found on the Ballzooka, the majority of which are I2C
 devices driven on a common serial bus. These connected directly to the builtin
 SCL and SDA GPIO pins are the Arduino.
 
+The Arduino periodically collects data from the sensors. Whenever a new reading
+is made, it is automatically sent to the Bluetoothed Android device through a 
+BLE notification. To prevent spamming the device with an excessive number of 
+updated reading packets, the Arduino will store the last transmitted reading. If
+a new sensor reading does not differ from the previous one by at least some 
+predetermined threshold value, it will not be transmitted. For example, if the 
+magnetometer reads a heading of 75 degrees, and then reads 75.000001 degrees, 
+the new reading would not be sufficiently different to justify transmitting it.
+
 #### Sonar
 The sonar sensor is a I2CXL-MaxSonar-EZ. It's using the devices default I2C 
 address of 0x70. This is in the 7-bit format, and Arduino's Wire library 
@@ -66,6 +75,9 @@ the device by writing 81 to the sonar. We wait about 100ms (although the
 datasheet indicates that this could be considerably reduced, this is just a test
 value) and then read two bytes from the device. These two bytes are appended
 into a single integer which represents the read distance in CM.
+
+After our initial testing, we concluded that the sonar, when being powered by 
+5V, is reliable to approximately 6 meters in distance.
 
 
 #### Magnetometer
@@ -79,4 +91,7 @@ The hard-iron effects of adjacent electronics and metal have also been taken
 into account during the magnetometer's calibration.
 
 #### GPS
-
+The GPS differs from the other sensors in that it sends its data to the Arduino 
+over a serial UART connection rather than I2C. Additionally, if powered completely
+off, can take several minutes in order to establish connection with satellites and
+triangulate its position.
