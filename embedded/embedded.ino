@@ -33,7 +33,7 @@ void setup() {
   InitSonar();
   InitMagnetometer();
   InitGPS();
-  // InitThermalCamera();
+  InitThermalCamera();
 
   // init flywheel motors
   InitMotors();
@@ -49,16 +49,11 @@ void setup() {
   pinMode(LED3_R, OUTPUT);
 }
 
-int count = 0;
 void loop() {
-  count++;
-  // Serial1.println("HELLO");
-  // Monitor.println("Transmitting HELLO");
 
-
-  Monitor.println(GetSonarData());
-  digitalWrite(LED3_R, count % 2);
-  delay(1000);
+  int dist = GetSonarData();
+  Monitor.print("DISTANCE FROM SONAR: ");
+  Monitor.println(dist);
 
   // verify Bluetooth is still connected
   if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread

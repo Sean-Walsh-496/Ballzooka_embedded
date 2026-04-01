@@ -95,3 +95,9 @@ The GPS differs from the other sensors in that it sends its data to the Arduino
 over a serial UART connection rather than I2C. Additionally, if powered completely
 off, can take several minutes in order to establish connection with satellites and
 triangulate its position.
+
+
+#### IR Camera
+Powered using 3.3V (although does contain a built-in regulator to accept 5V
+power as well.
+

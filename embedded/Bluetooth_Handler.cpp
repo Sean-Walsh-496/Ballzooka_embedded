@@ -3,6 +3,8 @@
 #include "Driving_Motor.h"
 #include "Sensors.h"
 
+#define PRINTING_SENSOR_DATA true
+
 // service UUID 
 #define SENSOR_SERVICE_UUID "ba10f731-f94d-45f8-8ccd-89e393b418f4"
 
@@ -14,6 +16,7 @@
 #define LEFT_FLYWHEEL_RPM_CHARACTERISTIC_UUID "ba10f735-f94d-45f8-8ccd-89e393b418f4"
 #define RIGHT_FLYWHEEL_RPM_CHARACTERISTIC_UUID "ba10f73a-f94d-45f8-8ccd-89e393b418f4"
 #define PERSON_DETECTED_CHARACTERISTIC_UUID "ba10f737-f94d-45f8-8ccd-89e393b418f4"
+#define PITCH_CHARACTERISTIC_UUID "ba10f73b-f94d-45f8-8ccd-89e393b418f4"
 
 // COMMAND UUIDs
 #define COMMAND_FLYWHEEL_RPM "ba10f738-f94d-45f8-8ccd-89e393b418f4"
@@ -29,6 +32,7 @@ BLEDoubleCharacteristic   LatCharacteristic(LAT_CHARACTERISTIC_UUID, BLERead | B
 BLEIntCharacteristic      BatteryCharacteristic(BATTERY_CHARACTERISTIC_UUID, BLERead);
 BLEIntCharacteristic      LeftFlywheelRPMCharacteristic(LEFT_FLYWHEEL_RPM_CHARACTERISTIC_UUID, BLERead);
 BLEIntCharacteristic      RightFlywheelRPMCharacteristic(RIGHT_FLYWHEEL_RPM_CHARACTERISTIC_UUID, BLERead);
+BLEIntCharacteristic      PitchRPMCharacteristic(PITCH_CHARACTERISTIC_UUID, BLERead);
 BLEBoolCharacteristic     PersonDetectedCharacteristic(PERSON_DETECTED_CHARACTERISTIC_UUID, BLERead | BLENotify);
 
 BLEDescriptor NotifyDescriptor("2902", "1");
@@ -37,9 +41,29 @@ BLEDescriptor NotifyDescriptor("2902", "1");
 BLEIntCharacteristic CommandFlywheelRPMCharacteristic(COMMAND_FLYWHEEL_RPM, BLERead | BLEWrite | BLENotify);
 BLEIntCharacteristic CommandLoaderAngleCharacteristic(COMMAND_LOADER_ANGLE, BLERead | BLEWrite | BLENotify);
 
+// saved state
+struct SavedData {
+  float val;
+  float threshold;
+};
 
+struct {
+  SavedData heading;
+  SavedData lon;
+  SavedData lat;
+  SavedData battery;
+  SavedData leftFlywheelRPM;
+  SavedData rightFlywheelRPM;
+  bool personDetected;
+
+} SavedState;
 
 // FUNCTION DEFINITIONS ========================================================
+
+void InitSavedState() {
+  SavedState.heading;
+}
+
 bool InitBluetooth() {
   if (BLE.begin()) {
     Monitor.println("Successfully initialized Bluetooth service!");
@@ -58,6 +82,7 @@ bool InitBluetooth() {
     sensorService.addCharacteristic(LeftFlywheelRPMCharacteristic);
     sensorService.addCharacteristic(RightFlywheelRPMCharacteristic);
     sensorService.addCharacteristic(PersonDetectedCharacteristic);
+    sensorService.addCharacteristic(PitchRPMCharacteristic);
     
     sensorService.addCharacteristic(CommandFlywheelRPMCharacteristic);
     sensorService.addCharacteristic(CommandLoaderAngleCharacteristic);
@@ -73,6 +98,7 @@ bool InitBluetooth() {
     PersonDetectedCharacteristic.addDescriptor(NotifyDescriptor);
     CommandFlywheelRPMCharacteristic.addDescriptor(NotifyDescriptor);
     CommandLoaderAngleCharacteristic.addDescriptor(NotifyDescriptor);
+    PitchRPMCharacteristic.addDescriptor(NotifyDescriptor);
 
 
     // init the service
@@ -104,31 +130,19 @@ bool HasBluetoothConnection() {
   return BLE.connected();
 }
 
+bool ShouldSendData(float val, SavedData prevVal) {
+  return prevVal.val + prevVal.threshold > val || prevVal.val - prevVal.threshold < val;
+}
+
 /**
  * @brief Updates sensor service's characteristics to fit currently read sensor
  * values
  */
 void UpdateSensorService() {
+  static long count = 0;
+  count++;
+  Monitor.println(count);
 
-  // get values
-  float heading = GetHeading();
-  GPSData pos = GetGPSData();
-
-
-  // print values
-  Monitor.println("HEADING: " + String(heading));
-  Monitor.println("LAT: " + String(pos.lat));
-  Monitor.println("LON: " + String(pos.lon));
-  Monitor.println("\r\n\r\n");
-
-  HeadingCharacteristic.setValue(GetHeading());
-
-  // position update
-  LonCharacteristic.setValue(pos.lon);
-  LatCharacteristic.setValue(pos.lat);
-
-
-  
   // verify device does not have people in front of it 
   if (IsPersonDetected()) {
     Monitor.println("PERSON DETECTED!!!!");
@@ -137,6 +151,35 @@ void UpdateSensorService() {
   else {
     PersonDetectedCharacteristic.setValue(false);
   }
+
+
+  // get values
+  float heading = GetHeading();
+  
+  GPSData pos = GetGPSData();
+
+
+  // print values
+  if (PRINTING_SENSOR_DATA) {
+    Monitor.println("HEADING: " + String(heading));
+    Monitor.println("LAT: " + String(pos.lat));
+    Monitor.println("LON: " + String(pos.lon));
+    Monitor.println("\r\n\r\n");
+  }
+
+
+  // should we send the data
+  // if (ShouldSendData(heading, SavedState.heading)) {
+    HeadingCharacteristic.setValue(heading);
+  // }
+
+  // if (ShouldSendData(pos.lon, SavedState.lon)) {
+    LonCharacteristic.setValue(pos.lon);
+  // }
+
+  // if (ShouldSendData(pos.lat, SavedState.lat)) {
+    LatCharacteristic.setValue(pos.lat);
+  // }
 
 }
 
