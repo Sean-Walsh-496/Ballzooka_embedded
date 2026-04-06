@@ -3,7 +3,7 @@
 #include "Driving_Motor.h"
 #include "Sensors.h"
 
-#define PRINTING_SENSOR_DATA true
+#define PRINTING_SENSOR_DATA false
 
 // service UUID 
 #define SENSOR_SERVICE_UUID "ba10f731-f94d-45f8-8ccd-89e393b418f4"
@@ -20,7 +20,7 @@
 
 // COMMAND UUIDs
 #define COMMAND_FLYWHEEL_RPM "ba10f738-f94d-45f8-8ccd-89e393b418f4"
-#define COMMAND_LOADER_ANGLE "ba10f739-f94d-45f8-8ccd-89e393b418f4"
+#define COMMAND_YAW "ba10f739-f94d-45f8-8ccd-89e393b418f4"
 
 
 BLEService                sensorService(SENSOR_SERVICE_UUID);
@@ -38,8 +38,8 @@ BLEBoolCharacteristic     PersonDetectedCharacteristic(PERSON_DETECTED_CHARACTER
 BLEDescriptor NotifyDescriptor("2902", "1");
 
 // COMMAND CHARACTERISTICS FROM APP
-BLEIntCharacteristic CommandFlywheelRPMCharacteristic(COMMAND_FLYWHEEL_RPM, BLERead | BLEWrite | BLENotify);
-BLEIntCharacteristic CommandLoaderAngleCharacteristic(COMMAND_LOADER_ANGLE, BLERead | BLEWrite | BLENotify);
+BLEDoubleCharacteristic CommandFlywheelRPMCharacteristic(COMMAND_FLYWHEEL_RPM, BLERead | BLEWrite | BLENotify);
+BLEDoubleCharacteristic CommandYawCharacteristic(COMMAND_YAW, BLERead | BLEWrite | BLENotify);
 
 // saved state
 struct SavedData {
@@ -64,6 +64,12 @@ void InitSavedState() {
   SavedState.heading;
 }
 
+/**
+ * @brief Accomplishes three things:
+ * 1) initialize and activate Bluetooth service
+ * 2) initialize all Bluetooth characteristics
+ * 3) Begin advertisting Bluetooth service to outside devices
+ */
 bool InitBluetooth() {
   if (BLE.begin()) {
     Monitor.println("Successfully initialized Bluetooth service!");
@@ -85,7 +91,7 @@ bool InitBluetooth() {
     sensorService.addCharacteristic(PitchRPMCharacteristic);
     
     sensorService.addCharacteristic(CommandFlywheelRPMCharacteristic);
-    sensorService.addCharacteristic(CommandLoaderAngleCharacteristic);
+    sensorService.addCharacteristic(CommandYawCharacteristic);
     
 
     // add descriptors to each characteristic
@@ -97,7 +103,7 @@ bool InitBluetooth() {
     RightFlywheelRPMCharacteristic.addDescriptor(NotifyDescriptor);
     PersonDetectedCharacteristic.addDescriptor(NotifyDescriptor);
     CommandFlywheelRPMCharacteristic.addDescriptor(NotifyDescriptor);
-    CommandLoaderAngleCharacteristic.addDescriptor(NotifyDescriptor);
+    CommandYawCharacteristic.addDescriptor(NotifyDescriptor);
     PitchRPMCharacteristic.addDescriptor(NotifyDescriptor);
 
 
@@ -112,8 +118,8 @@ bool InitBluetooth() {
     LeftFlywheelRPMCharacteristic.writeValue(0);
     RightFlywheelRPMCharacteristic.writeValue(0);
     PersonDetectedCharacteristic.writeValue(false);
-    CommandFlywheelRPMCharacteristic.writeValue(0);
-    CommandLoaderAngleCharacteristic.writeValue(0);
+    CommandFlywheelRPMCharacteristic.writeValue(0.0);
+    CommandYawCharacteristic.writeValue(0.0);
 
     AdvertiseBluetooth();
     return true;
@@ -130,6 +136,11 @@ bool HasBluetoothConnection() {
   return BLE.connected();
 }
 
+/**
+ * @brief In the interest of not spamming of the connected Bluetooth device, we only send
+ * updated values when the newly read value exceeds a certain threshold when compared with
+ * the previously sent value.
+ */
 bool ShouldSendData(float val, SavedData prevVal) {
   return prevVal.val + prevVal.threshold > val || prevVal.val - prevVal.threshold < val;
 }
@@ -139,9 +150,6 @@ bool ShouldSendData(float val, SavedData prevVal) {
  * values
  */
 void UpdateSensorService() {
-  static long count = 0;
-  count++;
-  Monitor.println(count);
 
   // verify device does not have people in front of it 
   if (IsPersonDetected()) {
@@ -188,14 +196,20 @@ void UpdateSensorService() {
  * whatever has been received
  */
 void ExecuteCommands() {
-  int val;
   if (CommandFlywheelRPMCharacteristic.written()) {
-    RespondToButton();
+    double raw_val = CommandFlywheelRPMCharacteristic.value();
+    delay(100);
+
+    Monitor.println(raw_val);
+    Monitor.flush();
   }
 
-  if (CommandLoaderAngleCharacteristic.written()) {
-    val = CommandLoaderAngleCharacteristic.value();
-    Monitor.print("READING COMMAND FOR LOADER ANGLE: ");
-    // Monitor.println(val);
+  if (CommandYawCharacteristic.written()) {
+    double yaw = CommandYawCharacteristic.value();
+    delay(100);
+    Monitor.print("YAW: ");
+    Monitor.println(yaw);
+    Monitor.flush();
   }
+
 }

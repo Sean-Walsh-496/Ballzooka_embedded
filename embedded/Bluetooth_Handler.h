@@ -8,7 +8,7 @@ extern BLEDoubleCharacteristic  HeadingCharacteristic;
 extern BLEDoubleCharacteristic  LonCharacteristic;
 extern BLEDoubleCharacteristic  LatCharacteristic;
 extern BLEIntCharacteristic     BatteryCharacteristic;
-extern BLEIntCharacteristic     RPMCharacteristic;
+extern BLEDoubleCharacteristic     RPMCharacteristic;
 
 extern BLEDescriptor LatUserDescriptor;
 extern BLEDescriptor LonUserDescriptor;

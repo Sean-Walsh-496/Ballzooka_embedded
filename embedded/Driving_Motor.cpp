@@ -6,8 +6,6 @@
 
 
 
-
-
 void RespondToButton() {
   static bool isEnabled = false;
   isEnabled = !isEnabled;

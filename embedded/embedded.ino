@@ -6,11 +6,12 @@
 #include "Driving_Motor.h"
 #include "Sensors.h"
 #include "State_Machine.h"
+#include "Stepper_Motor.h"
 #include "Bluetooth_Handler.h"
 
 
 // PROGRAM SETTINGS
-#define CONSOLE_LOGGING true
+#define CONSOLE_LOGGING false
 
 // GLOBALS =====================================================================
 State currentState;
@@ -42,18 +43,19 @@ void setup() {
   // Bridge.begin(); // initialize software bridge between MCU and MPU
 
 
-  Monitor.begin(); // init console logging
+  Monitor.begin(115200); // init console logging
   delay(1000); // wait for Monitor to initiaize (not really necessary just being safe)
   Monitor.println("Ballzooka powered on.");
   
   pinMode(LED3_R, OUTPUT);
+  digitalWrite(LED3_R, HIGH);
+
 }
 
 void loop() {
-
   int dist = GetSonarData();
-  Monitor.print("DISTANCE FROM SONAR: ");
-  Monitor.println(dist);
+  // Monitor.print("DISTANCE FROM SONAR: ");
+  // Monitor.println(dist);
 
   // verify Bluetooth is still connected
   if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread
