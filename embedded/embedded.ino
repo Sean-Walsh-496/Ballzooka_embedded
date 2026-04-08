@@ -54,8 +54,8 @@ void setup() {
 
 void loop() {
   int dist = GetSonarData();
-  // Monitor.print("DISTANCE FROM SONAR: ");
-  // Monitor.println(dist);
+  Monitor.print("DISTANCE FROM SONAR: ");
+  Monitor.println(dist);
 
   // verify Bluetooth is still connected
   if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread

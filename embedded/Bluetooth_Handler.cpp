@@ -3,7 +3,7 @@
 #include "Driving_Motor.h"
 #include "Sensors.h"
 
-#define PRINTING_SENSOR_DATA false
+#define PRINTING_SENSOR_DATA true
 
 // service UUID 
 #define SENSOR_SERVICE_UUID "ba10f731-f94d-45f8-8ccd-89e393b418f4"
