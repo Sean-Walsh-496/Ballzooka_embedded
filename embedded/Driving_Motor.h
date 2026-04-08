@@ -8,7 +8,7 @@ enum Side {
 
 void RespondToButton();
 void InitMotors();
-void StartMotors();
+void StartMotors(double rpm);
 void StopMotors();
 
 int GetRPM(Side motor);
