@@ -24,6 +24,8 @@ void PrintStatus() {
 }
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
   // set state machine to default
   currentState = EnterConnect(true);
 
@@ -47,8 +49,8 @@ void setup() {
   delay(1000); // wait for Monitor to initiaize (not really necessary just being safe)
   Monitor.println("Ballzooka powered on.");
   
-  pinMode(LED3_R, OUTPUT);
-  digitalWrite(LED3_R, HIGH);
+  pinMode(LED3_B, OUTPUT);
+  digitalWrite(LED3_B, LOW);
 
 }
 
@@ -74,6 +76,14 @@ void loop() {
       break;
     case IDLE_SAFE:
       currentState = HandleIdleSafe();
+      break;
+    case IDLE_DANGER:
+      break;
+    case REPOSITION:
+      break;
+    case STANDBY:
+      break;
+    case LAUNCH:
       break;
   }
 

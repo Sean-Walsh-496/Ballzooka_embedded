@@ -5,7 +5,7 @@
 
 #define PRINTING_SENSOR_DATA false
 
-// service UUID 
+// service UUID
 #define SENSOR_SERVICE_UUID "ba10f731-f94d-45f8-8ccd-89e393b418f4"
 
 // RAW SENSOR READING UUIDs
@@ -30,8 +30,8 @@ BLEDoubleCharacteristic   HeadingCharacteristic(HEADING_CHARACTERISTIC_UUID, BLE
 BLEDoubleCharacteristic   LonCharacteristic(LON_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEDoubleCharacteristic   LatCharacteristic(LAT_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEIntCharacteristic      BatteryCharacteristic(BATTERY_CHARACTERISTIC_UUID, BLERead);
-BLEIntCharacteristic      LeftFlywheelRPMCharacteristic(LEFT_FLYWHEEL_RPM_CHARACTERISTIC_UUID, BLERead);
-BLEIntCharacteristic      RightFlywheelRPMCharacteristic(RIGHT_FLYWHEEL_RPM_CHARACTERISTIC_UUID, BLERead);
+BLEIntCharacteristic      LeftFlywheelRPMCharacteristic(LEFT_FLYWHEEL_RPM_CHARACTERISTIC_UUID, BLERead | BLENotify);
+BLEIntCharacteristic      RightFlywheelRPMCharacteristic(RIGHT_FLYWHEEL_RPM_CHARACTERISTIC_UUID, BLERead | BLENotify);
 BLEIntCharacteristic      PitchRPMCharacteristic(PITCH_CHARACTERISTIC_UUID, BLERead);
 BLEBoolCharacteristic     PersonDetectedCharacteristic(PERSON_DETECTED_CHARACTERISTIC_UUID, BLERead | BLENotify);
 
@@ -79,7 +79,7 @@ bool InitBluetooth() {
 
     // advertises the service
     BLE.setAdvertisedService(sensorService);
-    
+
     // add the characteristics
     sensorService.addCharacteristic(HeadingCharacteristic);
     sensorService.addCharacteristic(LonCharacteristic);
@@ -89,10 +89,10 @@ bool InitBluetooth() {
     sensorService.addCharacteristic(RightFlywheelRPMCharacteristic);
     sensorService.addCharacteristic(PersonDetectedCharacteristic);
     sensorService.addCharacteristic(PitchRPMCharacteristic);
-    
+
     sensorService.addCharacteristic(CommandFlywheelRPMCharacteristic);
     sensorService.addCharacteristic(CommandYawCharacteristic);
-    
+
 
     // add descriptors to each characteristic
     HeadingCharacteristic.addDescriptor(NotifyDescriptor);
@@ -151,7 +151,7 @@ bool ShouldSendData(float val, SavedData prevVal) {
  */
 void UpdateSensorService() {
 
-  // verify device does not have people in front of it 
+  // verify device does not have people in front of it
   if (IsPersonDetected()) {
     Monitor.println("PERSON DETECTED!!!!");
     PersonDetectedCharacteristic.setValue(true);
@@ -163,7 +163,7 @@ void UpdateSensorService() {
 
   // get values
   float heading = GetHeading();
-  
+
   GPSData pos = GetGPSData();
 
 
@@ -188,11 +188,14 @@ void UpdateSensorService() {
   // if (ShouldSendData(pos.lat, SavedState.lat)) {
     LatCharacteristic.setValue(pos.lat);
   // }
+  //
+  LeftFlywheelRPMCharacteristic.setValue(GetRPM(LEFT));
+  RightFlywheelRPMCharacteristic.setValue(GetRPM(RIGHT));
 
 }
 
 /**
- * @brief Checks if the Bluetooth app has sent any commands and executes 
+ * @brief Checks if the Bluetooth app has sent any commands and executes
  * whatever has been received
  */
 void ExecuteCommands() {
@@ -202,6 +205,7 @@ void ExecuteCommands() {
 
     Monitor.println(raw_val);
     Monitor.flush();
+    StartMotors(raw_val);
   }
 
   if (CommandYawCharacteristic.written()) {
