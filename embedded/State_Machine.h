@@ -12,6 +12,9 @@ enum State {
   LAUNCH
 };
 
+struct BallzookaData {
+}
+
 
 // GLOBALS =====================================================================
 extern const char* stateNames[NUM_STATES];
@@ -24,5 +27,7 @@ State HandleConnect();
 State EnterIdleSafe();
 State HandleIdleSafe();
 
+State HandleEnterReposition();
+State HandleReposition();
 
 #endif

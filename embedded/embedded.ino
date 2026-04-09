@@ -18,6 +18,7 @@ State currentState;
 
 
 // FUNCTIONS ===================================================================
+
 void PrintStatus() {
   Monitor.print("Current state is: ");
   Monitor.println(stateNames[currentState]);

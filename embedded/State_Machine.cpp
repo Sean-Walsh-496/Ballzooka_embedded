@@ -28,3 +28,11 @@ State HandleIdleSafe() {
   }
   return IDLE_SAFE;
 }
+
+State HandleEnterReposition() {
+  return REPOSITION
+}
+
+State HandleReposition() {
+
+}
