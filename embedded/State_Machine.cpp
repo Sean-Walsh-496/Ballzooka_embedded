@@ -5,6 +5,17 @@
 const char* stateNames[NUM_STATES] = {"CONNECT", "IDLE_SAFE", "IDLE_DANGER", "REPOSITION", "STANDBY", "LAUNCH"};
 
 // Function Definitions ========================================================
+BallzookaData InitBallzookaData() {
+  BallzookaData data;
+  data.current_state = EnterConnect(true);
+  data.has_received_comamnd = false;
+  data.target_RPM = 0;
+  data.target_yaw = 0;
+
+  return data;
+}
+
+
 State EnterConnect(bool firstTime) {
   if (firstTime) {
     InitBluetooth();
@@ -30,7 +41,7 @@ State HandleIdleSafe() {
 }
 
 State HandleEnterReposition() {
-  return REPOSITION
+  return REPOSITION;
 }
 
 State HandleReposition() {

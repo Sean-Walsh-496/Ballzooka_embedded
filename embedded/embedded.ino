@@ -4,14 +4,15 @@
 // User-defined libraries
 #include "Bluetooth_Handler.h"
 #include "Driving_Motor.h"
+#include "Helper.h"
 #include "Sensors.h"
 #include "State_Machine.h"
 #include "Stepper_Motor.h"
 #include "Bluetooth_Handler.h"
 
 
-// PROGRAM SETTINGS
-#define CONSOLE_LOGGING false
+// GLOBALS
+BallzookaData ballzooka_data;
 
 // GLOBALS =====================================================================
 State currentState;
@@ -27,8 +28,8 @@ void PrintStatus() {
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
-  // set state machine to default
-  currentState = EnterConnect(true);
+
+  ballzooka_data = InitBallzookaData();
 
   // Init sensors
   Wire.begin(); // begin I2c communication
@@ -57,8 +58,9 @@ void setup() {
 
 void loop() {
   int dist = GetSonarData();
-  Monitor.print("DISTANCE FROM SONAR: ");
-  Monitor.println(dist);
+  LOG("SONAR DISTANCE: "); 
+  LOG(dist); 
+  LOG("\r\n");
 
   // verify Bluetooth is still connected
   if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread
@@ -71,12 +73,12 @@ void loop() {
   ExecuteCommands();
 
   // state machine
-  switch(currentState) {
+  switch(ballzooka_data.current_state) {
     case CONNECT:
-      currentState = HandleConnect();
+      ballzooka_data.current_state = HandleConnect();
       break;
     case IDLE_SAFE:
-      currentState = HandleIdleSafe();
+      ballzooka_data.current_state = HandleIdleSafe();
       break;
     case IDLE_DANGER:
       break;

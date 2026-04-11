@@ -202,18 +202,12 @@ void ExecuteCommands() {
   if (CommandFlywheelRPMCharacteristic.written()) {
     double raw_val = CommandFlywheelRPMCharacteristic.value();
     delay(100);
-
-    Monitor.println(raw_val);
-    Monitor.flush();
     StartMotors(raw_val);
   }
 
   if (CommandYawCharacteristic.written()) {
     double yaw = CommandYawCharacteristic.value();
     delay(100);
-    Monitor.print("YAW: ");
-    Monitor.println(yaw);
-    Monitor.flush();
   }
 
 }

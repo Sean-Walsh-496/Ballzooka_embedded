@@ -141,7 +141,9 @@ GPSData GetGPSData() {
   GPSData ret;
   while (Serial.available()) { // while there is input at UART pins
     char x = (char)Serial.read();
+
     Monitor.print(x);
+
     gps.encode(x); // TinyGPSPlus handles the NMEA encoding
   }
   Monitor.println("");

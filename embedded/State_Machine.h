@@ -13,7 +13,11 @@ enum State {
 };
 
 struct BallzookaData {
-}
+  State current_state;
+  bool has_received_comamnd;
+  float target_yaw;
+  float target_RPM;
+};
 
 
 // GLOBALS =====================================================================
@@ -21,6 +25,8 @@ extern const char* stateNames[NUM_STATES];
 
 
 // FUNCTIONS ===================================================================
+BallzookaData InitBallzookaData();
+
 State EnterConnect(bool firstTime);
 State HandleConnect();
 
