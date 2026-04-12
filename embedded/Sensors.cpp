@@ -17,6 +17,7 @@
 #define UART_RX D0
 #define UART_TX D1
 #define GPS_BAUD_RATE 9600
+#define ANEMOMETER_PIN A0
 
 const double MAG_OFFSETS[3] = { // use calibration script taken from Adafruit website
   (13.50 - 86.55) / 2.0, // x
@@ -137,14 +138,14 @@ void InitGPS() {
 }
 
 GPSData GetGPSData() {
-  Monitor.println("getting GPS data");
+  // Monitor.println("getting GPS data");
   GPSData ret;
   while (Serial.available()) { // while there is input at UART pins
     char x = (char)Serial.read();
-    Monitor.print(x);
+    // Monitor.print(x);
     gps.encode(x); // TinyGPSPlus handles the NMEA encoding
   }
-  Monitor.println("");
+  // Monitor.println("");
 
   ret.lat = gps.location.lat();
   ret.lon = gps.location.lng();
@@ -160,6 +161,19 @@ void InitThermalCamera() {
 
 void GetThermalCameraData(float* pixels) {
   ThermalCamera.readPixels(pixels); // TODO: don't use C-style arrays to prevent out-of-bounds indexing
+}
+
+void InitAnemometer() {
+
+}
+
+int GetAnemometerData() {
+  return analogRead(ANEMOMETER_PIN);
+}
+
+float GetWindSpeed() {
+  int idle_noise = 180; // raw ADC value detected when anemometer isn't spinning
+  // TODO: finish this and find out how to limit ADC noise
 }
 
 bool IsPersonDetected() { // TODO: finish this function!

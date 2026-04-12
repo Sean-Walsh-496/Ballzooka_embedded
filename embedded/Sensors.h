@@ -54,6 +54,10 @@ void InitThermalCamera();
 void GetThermalCameraData(float* pixels);
 void GetSerialThermalCameraData();
 
+void InitAnemometer();
+int GetAnemometerData();
+float GetWindSpeed();
+
 bool IsPersonDetected();
 
 

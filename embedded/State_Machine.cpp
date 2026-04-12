@@ -30,7 +30,7 @@ State HandleIdleSafe() {
 }
 
 State HandleEnterReposition() {
-  return REPOSITION
+  return REPOSITION;
 }
 
 State HandleReposition() {

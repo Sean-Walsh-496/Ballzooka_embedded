@@ -12,8 +12,8 @@ enum State {
   LAUNCH
 };
 
-struct BallzookaData {
-}
+// struct BallzookaData {
+// }
 
 
 // GLOBALS =====================================================================
