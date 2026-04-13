@@ -4,47 +4,28 @@
 // User-defined libraries
 #include "Bluetooth_Handler.h"
 #include "Driving_Motor.h"
+#include "Helper.h"
 #include "Sensors.h"
 #include "State_Machine.h"
 #include "Stepper_Motor.h"
 #include "Bluetooth_Handler.h"
 
-
-// PROGRAM SETTINGS
-#define CONSOLE_LOGGING false
-
 // GLOBALS =====================================================================
-State currentState;
-
+BallzookaData ballzooka_data;
 
 // FUNCTIONS ===================================================================
-
 void PrintStatus() {
-  Monitor.print("Current state is: ");
-  Monitor.println(stateNames[currentState]);
+  LOG("Current state is: ");
+  LOG(stateNames[ballzooka_data.current_state]);
+  LOG("\r\n");
 }
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
-  // set state machine to default
-  currentState = EnterConnect(true);
-
-  // Init sensors
-  Wire.begin(); // begin I2c communication
-  // Serial.begin(115200);
-  // InitGY521();
-  InitSonar();
-  InitMagnetometer();
-  InitGPS();
-  InitThermalCamera();
+  ballzooka_data = InitBallzookaData();
+  InitSensors();
 
   // init flywheel motors
   InitMotors();
-
-  // Offers some functions to the MPU
-  // Bridge.begin(); // initialize software bridge between MCU and MPU
-
 
   Monitor.begin(115200); // init console logging
   delay(1000); // wait for Monitor to initiaize (not really necessary just being safe)
@@ -56,27 +37,28 @@ void setup() {
 }
 
 void loop() {
-  int reading = GetAnemometerData();
-  Monitor.print("ANEMOMETER READING: ");
-  Monitor.println(reading);
+  int dist = GetSonarData();
+  LOG("SONAR DISTANCE: "); 
+  LOG(dist); 
+  LOG("\r\n");
 
   // verify Bluetooth is still connected
   if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread
-    currentState = EnterConnect(false);
+    EnterConnect(ballzooka_data, false);
   }
 
   // update sensor service data
   UpdateSensorService();
 
-  ExecuteCommands();
+  ReceiveCommands(ballzooka_data);
 
   // state machine
-  switch(currentState) {
+  switch(ballzooka_data.current_state) {
     case CONNECT:
-      currentState = HandleConnect();
+      HandleConnect(ballzooka_data);
       break;
     case IDLE_SAFE:
-      currentState = HandleIdleSafe();
+      HandleIdleSafe(ballzooka_data);
       break;
     case IDLE_DANGER:
       break;
@@ -88,9 +70,5 @@ void loop() {
       break;
   }
 
-  // log and change LED
-  if (CONSOLE_LOGGING) {
-    PrintStatus();
-  }
-
+  PrintStatus();
 }

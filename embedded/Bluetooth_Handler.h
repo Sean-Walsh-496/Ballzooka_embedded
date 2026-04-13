@@ -2,6 +2,7 @@
 #define BLUETOOTH_HANDLER
 
 #include <ArduinoBLE.h>
+#include "State_Machine.h"
 
 extern BLEService sensorService;
 extern BLEDoubleCharacteristic  HeadingCharacteristic;
@@ -19,5 +20,6 @@ bool InitBluetooth();
 bool HasBluetoothConnection();
 void AdvertiseBluetooth();
 void UpdateSensorService();
-void ExecuteCommands();
+void ReceiveCommands(BallzookaData &data);
+
 #endif

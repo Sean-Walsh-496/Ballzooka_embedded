@@ -1,3 +1,4 @@
+#include <Arduino_RouterBridge.h>
 #include "Helper.h"
 
 // FUNCTIONS ===================================================================

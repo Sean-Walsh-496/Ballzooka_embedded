@@ -42,6 +42,18 @@ Adafruit_AMG88xx ThermalCamera;  // Thermal camera
 // Declare wind-vane serial
 SoftwareSerial windVaneSerial(WIND_VANE_RX, WIND_VANE_TX);
 
+// Declare wind-vane serial
+SoftwareSerial windVaneSerial(WIND_VANE_RX, WIND_VANE_TX);
+
+
+void InitSensors() {
+  Wire.begin(); // begin I2c communication
+  // InitGY521();
+  InitSonar();
+  InitMagnetometer();
+  InitGPS();
+  InitThermalCamera();
+}
 
 void InitGY521() {
 

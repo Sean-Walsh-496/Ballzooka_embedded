@@ -198,22 +198,18 @@ void UpdateSensorService() {
  * @brief Checks if the Bluetooth app has sent any commands and executes
  * whatever has been received
  */
-void ExecuteCommands() {
+void ReceiveCommands(BallzookaData &data) {
   if (CommandFlywheelRPMCharacteristic.written()) {
-    double raw_val = CommandFlywheelRPMCharacteristic.value();
+    data.has_received_command = true;
+    data.target_RPM = CommandFlywheelRPMCharacteristic.value(); 
     delay(100);
-
-    Monitor.println(raw_val);
-    Monitor.flush();
-    StartMotors(raw_val);
+    StartMotors(data.target_RPM);
   }
 
   if (CommandYawCharacteristic.written()) {
-    double yaw = CommandYawCharacteristic.value();
+    data.has_received_command = true;
+    data.target_yaw = CommandYawCharacteristic.value(); 
     delay(100);
-    Monitor.print("YAW: ");
-    Monitor.println(yaw);
-    Monitor.flush();
   }
 
 }
