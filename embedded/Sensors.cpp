@@ -2,6 +2,7 @@
 #include <Adafruit_AMG88xx.h>
 #include <Arduino_RouterBridge.h>
 #include <Adafruit_LIS2MDL.h>
+#include <SoftwareSerial.h>
 #include <TinyGPSPlus.h>
 #include <math.h>
 #include <Wire.h>
@@ -18,6 +19,8 @@
 #define UART_TX D1
 #define GPS_BAUD_RATE 9600
 #define ANEMOMETER_PIN A0
+#define WIND_VANE_RX 12
+#define WIND_VANE_TX 13
 
 const double MAG_OFFSETS[3] = { // use calibration script taken from Adafruit website
   (13.50 - 86.55) / 2.0, // x
@@ -35,6 +38,9 @@ struct {
 Adafruit_LIS2MDL Mag = Adafruit_LIS2MDL(12345);
 TinyGPSPlus gps;                 // GPS
 Adafruit_AMG88xx ThermalCamera;  // Thermal camera
+
+// Declare wind-vane serial
+SoftwareSerial windVaneSerial(WIND_VANE_RX, WIND_VANE_TX);
 
 
 void InitGY521() {
@@ -174,6 +180,14 @@ int GetAnemometerData() {
 float GetWindSpeed() {
   int idle_noise = 180; // raw ADC value detected when anemometer isn't spinning
   // TODO: finish this and find out how to limit ADC noise
+}
+
+void InitWindVane() {
+
+}
+
+float GetWindDirection() {
+
 }
 
 bool IsPersonDetected() { // TODO: finish this function!

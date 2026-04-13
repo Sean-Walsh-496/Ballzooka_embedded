@@ -58,6 +58,9 @@ void InitAnemometer();
 int GetAnemometerData();
 float GetWindSpeed();
 
+void InitWindVane();
+float GetWindDirection();
+
 bool IsPersonDetected();
 
 
