@@ -2,19 +2,18 @@
 #include <Adafruit_AMG88xx.h>
 #include <Arduino_RouterBridge.h>
 #include <Adafruit_LIS2MDL.h>
-#include <SoftwareSerial.h>
 #include <TinyGPSPlus.h>
 #include <math.h>
 #include <Wire.h>
 
 
-// Addresses
+// I2C ADDRESSES ===============================================================
 #define GY521Address 0x68
 #define SonarAddress 0x70
 #define LSM303AGR_ACC_ADDRESS 0x19 // 0011001X
 #define LSM303AGR_MAG_ADDRESS 0x1E //0011110b
 
-// Pins
+// PINS ========================================================================
 #define UART_RX D0
 #define UART_TX D1
 #define GPS_BAUD_RATE 9600
@@ -22,6 +21,7 @@
 #define WIND_VANE_RX 12
 #define WIND_VANE_TX 13
 
+// VARIABLES ===================================================================
 const double MAG_OFFSETS[3] = { // use calibration script taken from Adafruit website
   (13.50 - 86.55) / 2.0, // x
   (77.85 - 37.45) / 2.0, // y
@@ -39,13 +39,7 @@ Adafruit_LIS2MDL Mag = Adafruit_LIS2MDL(12345);
 TinyGPSPlus gps;                 // GPS
 Adafruit_AMG88xx ThermalCamera;  // Thermal camera
 
-// Declare wind-vane serial
-SoftwareSerial windVaneSerial(WIND_VANE_RX, WIND_VANE_TX);
-
-// Declare wind-vane serial
-SoftwareSerial windVaneSerial(WIND_VANE_RX, WIND_VANE_TX);
-
-
+// FUNCTIONS ===================================================================
 void InitSensors() {
   Wire.begin(); // begin I2c communication
   // InitGY521();
