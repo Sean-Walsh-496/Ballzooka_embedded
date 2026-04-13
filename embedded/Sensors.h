@@ -33,6 +33,7 @@ struct GPSData {
   double hdop;
 };
 
+void InitSensors();
 
 void InitGY521();
 GY521Data GetGY521Data();

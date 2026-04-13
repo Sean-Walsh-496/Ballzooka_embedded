@@ -36,6 +36,15 @@ TinyGPSPlus gps;                 // GPS
 Adafruit_AMG88xx ThermalCamera;  // Thermal camera
 
 
+void InitSensors() {
+  Wire.begin(); // begin I2c communication
+  // InitGY521();
+  InitSonar();
+  InitMagnetometer();
+  InitGPS();
+  InitThermalCamera();
+}
+
 void InitGY521() {
 
   // wake GY521
