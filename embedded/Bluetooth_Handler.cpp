@@ -149,17 +149,7 @@ bool ShouldSendData(float val, SavedData prevVal) {
  * @brief Updates sensor service's characteristics to fit currently read sensor
  * values
  */
-void UpdateSensorService() {
-
-  // verify device does not have people in front of it
-  if (IsPersonDetected()) {
-    Monitor.println("PERSON DETECTED!!!!");
-    PersonDetectedCharacteristic.setValue(true);
-  }
-  else {
-    PersonDetectedCharacteristic.setValue(false);
-  }
-
+void UpdateSensorService(BallzookaData &data) {
 
   // get values
   float heading = GetHeading();

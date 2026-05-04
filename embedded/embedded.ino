@@ -47,8 +47,22 @@ void loop() {
     EnterConnect(ballzooka_data, false);
   }
 
+  // check if person has been detected
+  if (IsPersonDetected()) {
+    LOG("!!!!! PERSON DETECTED !!!!!\r\n");
+    ballzooka_data.person_detected = true;
+    PersonDetectedCharacteristic.setValue(true);
+    EnterIdleSafe(ballzooka_data);
+
+  }
+  else {
+    ballzooka_data.person_detected = false;
+    PersonDetectedCharacteristic.setValue(false);
+
+  }
+
   // update sensor service data
-  UpdateSensorService();
+  UpdateSensorService(ballzooka_data);
 
   ReceiveCommands(ballzooka_data);
 

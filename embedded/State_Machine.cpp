@@ -9,6 +9,7 @@ BallzookaData InitBallzookaData() {
   BallzookaData data;
   EnterConnect(data, true);
   data.has_received_command = false;
+  data.person_detected = false;
   data.target_RPM = 0;
   data.target_yaw = 0;
 
@@ -32,6 +33,19 @@ void HandleConnect(BallzookaData &data) {
   }
 }
 
+void EnterIdleSafe(BallzookaData &data) {
+  data.current_state = IDLE_SAFE;
+
+  // disable motors
+
+  // disable servos
+
+  // send message to user
+    // verify device does not have people in front of it
+  if (data.person_detected) {
+  }
+}
+
 void HandleIdleSafe(BallzookaData &data) {
   if (data.has_received_command) {
     data.current_state = REPOSITION;
@@ -39,6 +53,6 @@ void HandleIdleSafe(BallzookaData &data) {
 }
 
 void HandleReposition(BallzookaData &data) {
-
+  
 
 }

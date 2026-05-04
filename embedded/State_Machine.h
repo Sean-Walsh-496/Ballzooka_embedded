@@ -15,6 +15,7 @@ enum State {
 struct BallzookaData {
   State current_state;
   bool has_received_command;
+  bool person_detected;
   float target_yaw;
   float target_RPM;
 };
