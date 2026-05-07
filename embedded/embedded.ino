@@ -32,7 +32,6 @@ void setup() {
   Monitor.println("Ballzooka powered on.");
   
   pinMode(LED3_B, OUTPUT);
-  digitalWrite(LED3_B, LOW);
 
 }
 
@@ -84,5 +83,5 @@ void loop() {
       break;
   }
 
-  PrintStatus();
+  // PrintStatus();
 }

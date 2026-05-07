@@ -3,7 +3,7 @@
 #include "Driving_Motor.h"
 #include "Sensors.h"
 
-#define PRINTING_SENSOR_DATA true
+#define PRINTING_SENSOR_DATA false
 
 // service UUID
 #define SENSOR_SERVICE_UUID "ba10f731-f94d-45f8-8ccd-89e393b418f4"
@@ -193,7 +193,7 @@ void ReceiveCommands(BallzookaData &data) {
     data.has_received_command = true;
     data.target_RPM = CommandFlywheelRPMCharacteristic.value(); 
     delay(100);
-    StartMotors(data.target_RPM);
+    RespondToButton();
   }
 
   if (CommandYawCharacteristic.written()) {

@@ -26,14 +26,14 @@ void RespondToButton() {
   static bool isEnabled = false;
   isEnabled = !isEnabled;
 
-  // if (isEnabled) {
-  //   Monitor.println("ACTIVATING MOTORS");
-  //   StartMotors(1000.00);
-  // }
-  // else {
-  //   Monitor.println("DEACTIVATING MOTORS");
-  //   StopMotors();
-  // }
+  if (isEnabled) {
+    Monitor.println("ACTIVATING MOTORS");
+    StartMotors(1500);
+  }
+  else {
+    Monitor.println("DEACTIVATING MOTORS");
+    StopMotors();
+  }
 }
 
 void InitMotors() {
@@ -49,6 +49,7 @@ void InitMotors() {
 }
 
 void StartMotors(double rpm) {
+  digitalWrite(LED3_R, LOW);
   int outputValue = map(rpm, 0, 4300, 0, 1024);
   Monitor.print("Output value: ");
   Monitor.println(outputValue);
@@ -57,6 +58,7 @@ void StartMotors(double rpm) {
   analogWrite(RIGHT_MOTOR_PWM_PIN, outputValue);
 }
 void StopMotors() {
+  digitalWrite(LED3_R, HIGH);
   analogWrite(LEFT_MOTOR_PWM_PIN, 0);
   analogWrite(RIGHT_MOTOR_PWM_PIN, 0);
 }

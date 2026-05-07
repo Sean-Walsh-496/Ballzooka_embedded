@@ -198,5 +198,6 @@ float GetWindDirection() {
 
 bool IsPersonDetected() { // TODO: finish this function!
   const int DETECTION_CUTOFF = 70; 
-  return GetSonarData() < DETECTION_CUTOFF;
+  // return GetSonarData() < DETECTION_CUTOFF;
+  return false;
 }
