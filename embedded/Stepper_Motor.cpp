@@ -24,8 +24,44 @@ RotationCommand GetRotationCommand(float current_yaw, float new_yaw) {
   return final_command;
 }
 
-void RotateCannon(RotationCommand command) {
+void RotateCW() {
 
+}
+
+void RotateCCW() {
+
+}
+
+void StopRotate() {
+
+}
+
+void RotateCannon(RotationCommand command) {
+  const float MARGIN_OF_ERROR = 5; // in degrees. Pretty rough but maybe good enough
+  // get current heading
+  float cur_heading;
+
+  // compute final heading
+  float final_heading = cur_heading + command.degrees;
+
+  // start rotation 
+  switch(command.dir) {
+    case Direction::CCW:
+      RotateCCW();
+      break;
+    case Direction::CW:
+      RotateCW();
+      break;
+    default:
+      break;
+  }
+
+
+  // rotate until within range. TODO: stop this from overshooting or busy waiting
+  while (fabs(cur_heading - final_heading) > MARGIN_OF_ERROR) {}
+
+  // stop rotation
+  StopRotate();
 }
 
   // setup
