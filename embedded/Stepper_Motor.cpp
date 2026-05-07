@@ -1,4 +1,7 @@
+#include <Arduino_RouterBridge.h>
+
 #include "Stepper_Motor.h"
+#include "Sensors.h"
 #include "math.h"
 
 /**
@@ -39,7 +42,7 @@ void StopRotate() {
 void RotateCannon(RotationCommand command) {
   const float MARGIN_OF_ERROR = 5; // in degrees. Pretty rough but maybe good enough
   // get current heading
-  float cur_heading;
+  float cur_heading = GetHeading();
 
   // compute final heading
   float final_heading = cur_heading + command.degrees;
@@ -58,7 +61,11 @@ void RotateCannon(RotationCommand command) {
 
 
   // rotate until within range. TODO: stop this from overshooting or busy waiting
-  while (fabs(cur_heading - final_heading) > MARGIN_OF_ERROR) {}
+  while (fabs(cur_heading - final_heading) > MARGIN_OF_ERROR) {
+    float cur_heading = GetHeading();
+    Monitor.println("Rotating");
+    delay(100);
+  }
 
   // stop rotation
   StopRotate();

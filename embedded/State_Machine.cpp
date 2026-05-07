@@ -1,4 +1,6 @@
+#include "Sensors.h"
 #include "State_Machine.h"
+#include "Stepper_Motor.h"
 #include "Bluetooth_Handler.h"
 #include "Helper.h"
 
@@ -53,6 +55,5 @@ void HandleIdleSafe(BallzookaData &data) {
 }
 
 void HandleReposition(BallzookaData &data) {
-  
-
+  RotateCannon(GetRotationCommand(GetHeading(), data.target_yaw));
 }

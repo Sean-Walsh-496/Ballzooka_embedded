@@ -76,6 +76,7 @@ void loop() {
     case IDLE_DANGER:
       break;
     case REPOSITION:
+      HandleReposition(ballzooka_data);
       break;
     case STANDBY:
       break;
@@ -83,5 +84,6 @@ void loop() {
       break;
   }
 
-  // PrintStatus();
+  PrintStatus();
+  delay(100);
 }
