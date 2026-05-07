@@ -19,7 +19,7 @@ struct RotationCommand {
 
 
 RotationCommand GetRotationCommand(float current_yaw, float new_yaw);
-void RotateCannon(RotationCommand command);
+bool RotateCannon(RotationCommand command);
 void RotateCW();
 void RotateCCW();
 void StopRotate();

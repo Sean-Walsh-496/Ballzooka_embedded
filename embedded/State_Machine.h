@@ -36,4 +36,6 @@ void HandleIdleSafe(BallzookaData &data);
 
 void HandleReposition(BallzookaData &data);
 
+void HandleIdleDanger(BallzookaData &data);
+
 #endif

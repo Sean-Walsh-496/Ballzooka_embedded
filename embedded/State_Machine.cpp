@@ -55,5 +55,15 @@ void HandleIdleSafe(BallzookaData &data) {
 }
 
 void HandleReposition(BallzookaData &data) {
-  RotateCannon(GetRotationCommand(GetHeading(), data.target_yaw));
+  if (RotateCannon(GetRotationCommand(GetHeading(), data.target_yaw))) {
+    return;
+  }
+  else {
+    data.current_state = IDLE_DANGER;
+  }
+}
+
+void HandleIdleDanger(BallzookaData &data) {
+  // start motors
+
 }

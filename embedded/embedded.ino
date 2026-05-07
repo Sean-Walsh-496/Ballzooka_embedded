@@ -74,6 +74,7 @@ void loop() {
       HandleIdleSafe(ballzooka_data);
       break;
     case IDLE_DANGER:
+      HandleIdleDanger(ballzooka_data);
       break;
     case REPOSITION:
       HandleReposition(ballzooka_data);

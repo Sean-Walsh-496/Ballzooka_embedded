@@ -39,7 +39,7 @@ void StopRotate() {
 
 }
 
-void RotateCannon(RotationCommand command) {
+bool RotateCannon(RotationCommand command) {
   const float MARGIN_OF_ERROR = 5; // in degrees. Pretty rough but maybe good enough
   // get current heading
   float cur_heading = GetHeading();
@@ -47,28 +47,27 @@ void RotateCannon(RotationCommand command) {
   // compute final heading
   float final_heading = cur_heading + command.degrees;
 
-  // start rotation 
-  switch(command.dir) {
-    case Direction::CCW:
-      RotateCCW();
-      break;
-    case Direction::CW:
-      RotateCW();
-      break;
-    default:
-      break;
-  }
-
-
-  // rotate until within range. TODO: stop this from overshooting or busy waiting
-  while (fabs(cur_heading - final_heading) > MARGIN_OF_ERROR) {
-    float cur_heading = GetHeading();
+  if (fabs(cur_heading - final_heading) > MARGIN_OF_ERROR) {
+    // start rotation 
+    switch(command.dir) {
+      case Direction::CCW:
+        RotateCCW();
+        break;
+      case Direction::CW:
+        RotateCW();
+        break;
+      default:
+        break;
+    }
     Monitor.println("Rotating");
-    delay(100);
+    return true;
+  }
+  else {
+    // stop rotation
+    StopRotate();
+    return false;
   }
 
-  // stop rotation
-  StopRotate();
 }
 
   // setup
