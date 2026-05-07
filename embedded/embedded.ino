@@ -36,10 +36,10 @@ void setup() {
 }
 
 void loop() {
-  int dist = GetSonarData();
-  LOG("SONAR DISTANCE: "); 
-  LOG(dist); 
-  LOG("\r\n");
+  // int dist = GetSonarData();
+  // LOG("SONAR DISTANCE: "); 
+  // LOG(dist); 
+  // LOG("\r\n");
 
   // verify Bluetooth is still connected
   if (! HasBluetoothConnection()) { // TODO: maybe check this less frequently or in a separate thread

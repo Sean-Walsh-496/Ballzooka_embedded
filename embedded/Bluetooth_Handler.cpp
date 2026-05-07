@@ -21,6 +21,7 @@
 // COMMAND UUIDs
 #define COMMAND_FLYWHEEL_RPM "ba10f738-f94d-45f8-8ccd-89e393b418f4"
 #define COMMAND_YAW "ba10f739-f94d-45f8-8ccd-89e393b418f4"
+#define COMMAND_PITCH "ba10f73c-f94d-45f8-8ccd-89e393b418f4"
 
 
 BLEService                sensorService(SENSOR_SERVICE_UUID);
@@ -40,7 +41,7 @@ BLEDescriptor NotifyDescriptor("2902", "1");
 // COMMAND CHARACTERISTICS FROM APP
 BLEDoubleCharacteristic CommandFlywheelRPMCharacteristic(COMMAND_FLYWHEEL_RPM, BLERead | BLEWrite | BLENotify);
 BLEDoubleCharacteristic CommandYawCharacteristic(COMMAND_YAW, BLERead | BLEWrite | BLENotify);
-
+BLEDoubleCharacteristic CommandPitchCharacteristic(COMMAND_PITCH, BLERead | BLEWrite | BLENotify);
 // saved state
 struct SavedData {
   float val;
@@ -92,6 +93,8 @@ bool InitBluetooth() {
 
     sensorService.addCharacteristic(CommandFlywheelRPMCharacteristic);
     sensorService.addCharacteristic(CommandYawCharacteristic);
+    sensorService.addCharacteristic(CommandPitchCharacteristic);
+
 
 
     // add descriptors to each characteristic
@@ -104,6 +107,7 @@ bool InitBluetooth() {
     PersonDetectedCharacteristic.addDescriptor(NotifyDescriptor);
     CommandFlywheelRPMCharacteristic.addDescriptor(NotifyDescriptor);
     CommandYawCharacteristic.addDescriptor(NotifyDescriptor);
+    CommandPitchCharacteristic.addDescriptor(NotifyDescriptor);
     PitchRPMCharacteristic.addDescriptor(NotifyDescriptor);
 
 
@@ -120,6 +124,7 @@ bool InitBluetooth() {
     PersonDetectedCharacteristic.writeValue(false);
     CommandFlywheelRPMCharacteristic.writeValue(0.0);
     CommandYawCharacteristic.writeValue(0.0);
+    CommandPitchCharacteristic.writeValue(0.0);
 
     AdvertiseBluetooth();
     return true;
@@ -193,13 +198,25 @@ void ReceiveCommands(BallzookaData &data) {
     data.has_received_command = true;
     data.target_RPM = CommandFlywheelRPMCharacteristic.value(); 
     delay(100);
-    RespondToButton();
+    StartMotors(data.target_RPM);
   }
 
   if (CommandYawCharacteristic.written()) {
     data.has_received_command = true;
     data.target_yaw = CommandYawCharacteristic.value(); 
     delay(100);
+
+    Monitor.println("YAW");
+    Monitor.println(data.target_yaw);
+  }
+
+  if (CommandPitchCharacteristic.written()) {
+    data.has_received_command = true;
+    float target_pitch = CommandPitchCharacteristic.value();
+    delay(100);
+
+    Monitor.println("PITCH");
+    Monitor.println(target_pitch);
   }
 
 }

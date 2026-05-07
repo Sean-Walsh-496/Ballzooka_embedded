@@ -50,7 +50,7 @@ void InitMotors() {
 
 void StartMotors(double rpm) {
   digitalWrite(LED3_R, LOW);
-  int outputValue = map(rpm, 0, 4300, 0, 1024);
+  int outputValue = map(rpm, 0, 5000, 0, 1024);
   Monitor.print("Output value: ");
   Monitor.println(outputValue);
   Monitor.println("Starting motors");
