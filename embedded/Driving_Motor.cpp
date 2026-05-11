@@ -1,6 +1,7 @@
 #include "Driving_Motor.h"
 #include <Arduino_RouterBridge.h>
 
+// Defining the pins used for controlling the motor.
 #define LEFT_MOTOR_PWM_PIN D5
 #define RIGHT_MOTOR_PWM_PIN D6
 #define LEFT_MOTOR_HALL_PIN D7

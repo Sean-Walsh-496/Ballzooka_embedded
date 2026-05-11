@@ -196,8 +196,9 @@ float GetWindDirection() {
 
 }
 
-bool IsPersonDetected() { // TODO: finish this function!
-  const int DETECTION_CUTOFF = 70; 
-  // return GetSonarData() < DETECTION_CUTOFF;
-  return false;
+bool IsPersonDetected() { 
+  // TODO: finish this function by integrating thermal camera!
+  
+  const int DETECTION_CUTOFF = 100; // units in cm.
+  return GetSonarData() < DETECTION_CUTOFF;
 }

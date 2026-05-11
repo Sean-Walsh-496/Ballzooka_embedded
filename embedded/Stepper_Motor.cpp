@@ -12,6 +12,7 @@
 RotationCommand GetRotationCommand(float current_yaw, float new_yaw) {
   RotationCommand final_command;
   
+  // I love ternary operations
   Direction dir = (current_yaw > new_yaw) ? Direction::CCW : Direction::CW;
   float diff = fabs(current_yaw - new_yaw);
   
@@ -39,6 +40,11 @@ void StopRotate() {
 
 }
 
+/**
+ * Given a rotation command, turns the cannon in that direction
+ *
+ * @param command indicates how much to turn and in what direction
+ */
 bool RotateCannon(RotationCommand command) {
   const float MARGIN_OF_ERROR = 5; // in degrees. Pretty rough but maybe good enough
   // get current heading
@@ -47,6 +53,7 @@ bool RotateCannon(RotationCommand command) {
   // compute final heading
   float final_heading = cur_heading + command.degrees;
 
+  // if outside our margin of error
   if (fabs(cur_heading - final_heading) > MARGIN_OF_ERROR) {
     // start rotation 
     switch(command.dir) {

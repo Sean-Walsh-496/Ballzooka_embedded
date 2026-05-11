@@ -16,13 +16,17 @@ struct BallzookaData {
   State current_state;
   bool has_received_command;
   bool person_detected;
+
+  // These fields are for when the cannon receives a command from the App. These
+  // are checked against to ensure that the cannon is maintaining the desired 
+  // position and RPM.
   float target_yaw;
   float target_RPM;
 };
 
 
 // GLOBALS =====================================================================
-extern const char* stateNames[NUM_STATES];
+extern const char* stateNames[NUM_STATES]; // Used when logging current state
 
 
 // FUNCTIONS ===================================================================
