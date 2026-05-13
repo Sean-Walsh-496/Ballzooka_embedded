@@ -191,16 +191,21 @@ void UpdateSensorService(BallzookaData &data) {
 
 /**
  * @brief Checks if the Bluetooth app has sent any commands and executes
- * whatever has been received
+ * whatever has been received. This is achieved by writing the new data to the 
+ * Ballzooka state struct, which the state machine can later reference.
  */
 void ReceiveCommands(BallzookaData &data) {
+
+  // if new RPM has been received from applications
   if (CommandFlywheelRPMCharacteristic.written()) {
     data.has_received_command = true;
     data.target_RPM = CommandFlywheelRPMCharacteristic.value(); 
     delay(100);
-    StartMotors(data.target_RPM);
+    StartMotors(data.target_RPM); // we should move this logic out of the 
+                                  // Bluetooth handler and into the state machine code
   }
 
+  // if new Yaw has been received
   if (CommandYawCharacteristic.written()) {
     data.has_received_command = true;
     data.target_yaw = CommandYawCharacteristic.value(); 
@@ -210,6 +215,7 @@ void ReceiveCommands(BallzookaData &data) {
     Monitor.println(data.target_yaw);
   }
 
+  // if new pitch has been received
   if (CommandPitchCharacteristic.written()) {
     data.has_received_command = true;
     float target_pitch = CommandPitchCharacteristic.value();

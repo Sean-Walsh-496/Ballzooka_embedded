@@ -40,6 +40,11 @@ TinyGPSPlus gps;                 // GPS
 Adafruit_AMG88xx ThermalCamera;  // Thermal camera
 
 // FUNCTIONS ===================================================================
+
+/**
+ * @brief Several sensors have specific startup routines that must be completed 
+ * in order to properly function.
+ */
 void InitSensors() {
   Wire.begin(); // begin I2c communication
   // InitGY521();
@@ -49,6 +54,9 @@ void InitSensors() {
   InitThermalCamera();
 }
 
+/**
+ * @brief Device must receive several I2C startup packets
+ */
 void InitGY521() {
 
   // wake GY521
@@ -59,15 +67,20 @@ void InitGY521() {
   Wire.endTransmission(true);
 }
 
+/**
+ * @brief Read data from the device and load it into organized data struct.
+ */
 GY521Data GetGY521Data() {
   GY521Data ret;
   Wire.beginTransmission(GY521Address);
-  Wire.write(0x3B);  
+  Wire.write(0x3B);  // read request
   Wire.endTransmission(false);
   Wire.requestFrom(GY521Address, 14, true); // 14 bytes of data
 
   // populate struct
-  ret.AcX = Wire.read()<<8|Wire.read();    
+  ret.AcX = Wire.read()<<8|Wire.read(); // read first byte, shift it, 
+                                        // then read second byte into 
+                                        // lower half of register
   ret.AcY = Wire.read()<<8|Wire.read();  
   ret.AcZ = Wire.read()<<8|Wire.read(); 
   ret.Tmp = Wire.read()<<8|Wire.read(); 
@@ -78,6 +91,10 @@ GY521Data GetGY521Data() {
   return ret;
 }
 
+/**
+ * @brief Several sensors have specific startup routines that must be completed 
+ * in order to properly function.
+ */
 GY521Orientation GetGY521Orientation(const GY521Data& data) {
   GY521Orientation ret;
   double x = data.AcX;
@@ -97,8 +114,12 @@ void InitSonar() {
   
 }
 
+/**
+ * @brief Handles writing necessary command frames to I2C data line and then 
+ * reading resulting response from device.
+ * @returns distance in centimeters
+ */
 int GetSonarData() {
-
   Wire.beginTransmission(SonarAddress);
   Wire.write(0x51); // command a range reading
   Wire.endTransmission(false);
@@ -111,6 +132,10 @@ int GetSonarData() {
 
 }
 
+/**
+ * @brief Reading from the magnetometer is largely handled through an external
+ * library
+ */
 void InitMagnetometer() {
   if (!Mag.begin()) {
     Monitor.println("Something went wrong initializing the magnetometer");
@@ -118,7 +143,10 @@ void InitMagnetometer() {
   Mag.begin();
 }
 
-
+/**
+ * @brief Similar to GY521, mostly handled through external library and then 
+ * stored in device-specific struct.
+ */
 LSM303AGRData GetMagnetometerData() {
   sensors_event_t event;
   LSM303AGRData ret;
@@ -133,6 +161,10 @@ LSM303AGRData GetMagnetometerData() {
   return ret;
 }
 
+/**
+ * @brief Reads in data from magnetometer and returns a heading
+ * @returns heading where 0 represents cardinal north, 180 is south
+ */
 float GetHeading() {
   float heading;
 
@@ -145,10 +177,15 @@ float GetHeading() {
   return heading;
 }
 
+
 void InitGPS() {
   Serial.begin(GPS_BAUD_RATE); // GPS is connected to UART TX and RX pins
 }
 
+/**
+ * @brief Reads in GPS data using TinyGPS library
+ * @returns struct of gps data
+ */
 GPSData GetGPSData() {
   // Monitor.println("getting GPS data");
   GPSData ret;
@@ -179,6 +216,7 @@ void InitAnemometer() {
 
 }
 
+// more details wind sensor code can be found on "wind_vane_test-final" branch
 int GetAnemometerData() {
   return analogRead(ANEMOMETER_PIN);
 }
