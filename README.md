@@ -9,8 +9,6 @@ Arduino IDE (tested and ran with IDE 2.0) will allow you to compile the source
 and upload it to an Arduino device. The software is targetting the Arduino UNO 
 Q.
 
-
-
 ## Implementation Details
 
 ### Bluetooth
@@ -28,13 +26,20 @@ groupings of individual pieces of data. These pieces of data, which may be read
 or written by the central device, are called *characteristics*.
 
 A single service is advertised in order to simplify the connection process. 
-Several characteristics are being advertized, including:
+Several data characteristics are advertized, including:
 - Heading (returns a double)
 - Longitude (returns a double)
 - Latitude (returns a double)
-- Battery (returns an integer)
-- RPM (returns an integer)
+- Battery (returns an integer) <----- TODO: This one isn't implemented yet!
+- RPM for both wheels (returns an integer)
 - Person Detected (returns a boolean)
+
+Additionally, we have several "command" characteristics, that is, 
+characteristics that we allow the Android application to write to which the 
+Arduino reads to react to those commands. These include:
+- Command Flywheel RPM (double, both wheels read from the same value)
+- Command Yaw (returns a double, where 0 represents north, 180 south)
+- Command Pitch (double)
 
 A heartbeat signal is sent periodically from the Ballzooka to the app to ensure 
 that the connection is still active. In order to save power, once a connection 
@@ -88,7 +93,9 @@ how many mg correspond to the raw digital output is determined by a sensitivity
 parameter which can be set through I2C.
 
 The hard-iron effects of adjacent electronics and metal have also been taken 
-into account during the magnetometer's calibration.
+into account during the magnetometer's calibration, although when the sensor is
+mounted for a final time, it may be necessary to recalibrate these values as 
+they depend on the material immediately surrounding the sensor. 
 
 #### GPS
 The GPS differs from the other sensors in that it sends its data to the Arduino 
@@ -96,8 +103,52 @@ over a serial UART connection rather than I2C. Additionally, if powered complete
 off, can take several minutes in order to establish connection with satellites and
 triangulate its position.
 
+Our GPS outputs NMEA data as a string of chars to our UART pins, and this can be
+read in using the Arduino's builtin Serial class. The GPS can receive data from
+several satellite , including GLONASS, Galileo, Beiduo, and GPS.
+
+Through experimentation, we've had significant difficulty getting the GPS 
+working while indoors, specifically while inside of the senior design lab, so a
+direct line of sight with the sky is generally preferred.
+
 
 #### IR Camera
 Powered using 3.3V (although does contain a built-in regulator to accept 5V
-power as well.
+power as well), this device reads in am 8 x 8 grid of temperature cells, 
+generally able to detect humans within the environment. While we did test this
+and get data readings, we never actually integrated this into the final design.
+Likely this would involve testing based on a gradient or relative temperature 
+detected, as the absolute temperature it detects in a given cell can vary 
+depending on how far away a person is from the camera.
+
+#### Wind Sensors
+When accounting for wind, we need to treat it like a vector essentially, meaning
+we need both the wind's magnitude and direction. While the anemometer is 
+working, being a fairly straightforward analog device which can be connected to 
+the Arduino through one of its analog input pins, the wind vane is more 
+challenging. 
+
+The manufacturer linked some example code on their website to get the device 
+working, however, this original code doesn't appear to work. There's a separate
+branch within this repository called "wind_vane_test_final" which contains that
+code with some modifications. We were unable to get that code to work, so 
+resulting no wind adjustments could be made, since that would require both the
+wind's magnitude (received through the anemometer) *and* its direction.
+
+### State Machine
+This project uses a state machine to base its overall architecture around. This
+is mostly done to increase the reliability of the software. By explicitly 
+describing the states that the cannon can be in and enumerating how those states
+transition between one another, it should make it more challenging (although not
+impossible) for the device to end up in some unusual or poorly defined state. 
+
+The state machine is mostly handled in a switch statement which can be found 
+within the main file (embedded.ino). Each state has a unique HandleState() 
+function which is called. Currently there are some behaviors that are handled 
+within other files that should be moved to these functions. For example, the
+Bluetooth handler still explicitly calls the functions which spin the flywheels, 
+even though this behavior really should be handled within the state handling
+functions. Currently this slightly sloppy implementation isn't causing any known
+issues, but this is something that should be addressed. If we had more time, we 
+would have refactored this appropriately. 
 
